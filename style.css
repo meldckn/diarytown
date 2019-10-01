@@ -1,0 +1,320 @@
+
+/* Variables */
+:root {
+	--bkgd: lavender;
+	--navy: rgb(34,0,127);
+	--pink: rgb(255,96,125);
+	--mint: rgb(127,255,181);
+	--softblue: rgb(152,152,253);
+	--cyanish: rgb(83,230,255);
+	--blue: rgb(61,5,227);
+	--column-offset: 60px;
+	--card-width: 230px;
+}
+
+/* Colors */
+body {			background-color: var(--bkgd); }
+.diary-page { 	background: white; /* papayawhip, seashell, or snow when on white, or floralwhite or cornsilk on lavendar*/ 
+				border-color: var(--bkgd); }
+.diary-phrase { background: lavender; } /* transition: .5s ease-out all;} */
+.diary-phrase.highlight { background: #ceceff; }
+.dragGhost { 
+	border-color: gold !;
+	border-width: thick;
+	/*background: #ceceff !important; 
+	cursor: grabbing !important;*/
+} /* transition: none;} */
+.dragging { 
+	border-color: gold !;
+	border-width: thick;
+	cursor: grabbing;
+	/*background: #ceceff !important; 
+	cursor: grabbing !important;*/
+} /* transition: none;} */
+.trashGhost {
+	display: none;
+}
+
+.phrase 				{ background: rgba(180,180,255,1); }
+.phrase.connector		{ background: deepskyblue; }
+.phrase.external		{ background: #93e4ff; }
+.phrase.modifier		{ background: darkturquoise; }
+.phrase.movement 		{ background: aquamarine; }
+.phrase.self			{ background: var(--softblue); }
+.phrase.social 			{ background: rgba(255,105,180,1); }
+.phrase.work			{ background: var(--mint); }
+
+/*
+.phrase:hover 			{ background: rgba(180,180,255,.5); }
+.phrase.movement:hover 	{ background: rgba(127,255,212,.5); }
+.phrase.social:hover 	{ background: rgba(255,105,180,.5); }
+*/
+
+/* Fonts */
+body { 
+	font-family: 'PT Sans'; 
+	font-weight: lighter;
+	font-size: 14px;
+	margin: 0px;
+}
+
+/* Structure */
+
+#main-container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center; /* horizontal center */
+	height: 100vh;
+	width: 100vw;
+}
+
+.diary-page {
+	flex: 1; /* Size relative to the divs to the left and right */ 
+	padding: 50px;
+	display: flex;
+	flex-wrap: wrap;
+	max-width: 30vw;
+	height: 50vh;
+	border-style: solid;
+	border-width: 1px;
+}
+
+/* Diagonal stacked paper effect */
+/* From https://css-tricks.com/books/volume-i/create-shuffled-stack-papers/ */
+
+.diary-page {
+  /* Need position to allow stacking of pseudo-elements */
+  position: relative;
+}
+
+.diary-page,
+.diary-page::before,
+.diary-page::after {
+ 	/* Borders to distinguish sheets from one another */
+	border-style: solid;
+	border-width: 1px;
+	border-color: var(--bkgd);
+}
+
+.diary-page::before,
+.diary-page::after {
+  content: "";
+  position: absolute;
+  /*width: 100%;*/
+  height: 100%;
+  background-color: white;
+}
+
+/* Second sheet of diary-page */
+.diary-page::before {
+  top: 7px;
+  z-index: -1;
+  width: 101.55%;
+}
+/* Third sheet of diary-page */
+.diary-page::after {
+  top: 14px;
+  z-index: -2;
+  width: 103%;
+}
+/* Right side pages */
+.diary-page.page-right::before,
+.diary-page.page-right::after {
+	border-top-left-radius: 100px 30px;
+}
+.diary-page.page-right::before {
+	left: -1px;
+}
+.diary-page.page-right::after {
+	left: -1px;
+} 
+/* Left side pages */
+.diary-page.page-left::before,
+.diary-page.page-left::after {
+	border-top-right-radius: 100px 30px;
+}
+.diary-page.page-left::before {
+	left: -9px;
+}
+.diary-page.page-left::after {
+	left: -16px;
+} 
+
+
+.page-left {
+	margin-right: 0px;
+	border-top-right-radius: 100px 30px;
+}
+.page-right {
+	margin-left: 0px;
+	border-top-left-radius: 100px 30px;
+}
+#clear-diary {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    padding: 1rem;
+    font-style: italic;
+    font-family: serif;
+    letter-spacing: .2rem;
+    color: grey;
+}
+#date-container {
+	width: 100%;
+}
+#diary {
+	display: inline-block;
+	margin-top: auto;
+	margin-bottom: auto;
+	overflow: auto;
+	height: inherit;
+	width: 100%;
+}
+#dateline {
+	text-align: left;
+	background: unset;
+	font-size: large;
+	margin-bottom: 10px;
+}
+#trash {
+	position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    color: gray;
+}
+.phrase-container,.phrase {
+    cursor: -webkit-grab; /* Chrome 1-21, Safari 4+ */
+    cursor:    -moz-grab; /* Firefox 1.5-26 */
+    cursor:         grab; /* W3C standards syntax, should come least */
+	cursor: grab; 
+}
+/*.phrase-container,.phrase:active {
+    cursor: -webkit-grabbing;
+    cursor:    -moz-grabbing;
+    cursor:         grabbing;
+}*/
+.diary-phrase {
+	float: left;
+	top: 0px;
+	position: relative;
+	padding: 5px 10px;
+	margin: 3px;
+	border-radius: 8px;
+	font-size: small; /* Needs to be the same size as .phrase */
+}
+.phrase {
+	float: left;
+	top: 0px;
+	position: relative;
+	padding: 5px 10px;
+	margin: 3px;
+	border-radius: 8px;
+	font-size: small;
+}
+/* Right-pointing arrow after modifiers 
+   by setting the backgrounds of three borders to transparent */
+.phrase-container-modifier::after{
+	content: "";
+    display: inline-block;
+    position: relative;
+	width: 0; 
+	height: 0; 
+	top: 3px;
+	border-bottom: 13px solid transparent;  /* left arrow slant */
+	border-top: 13px solid transparent; /* right arrow slant */
+	border-left: 8px solid darkturquoise; /* bottom, add background color here */
+	font-size: 0;
+	line-height: 0;
+}
+.phrase.modifier {
+	margin: 3px 0px 3px 3px;
+    border-radius: 8px 0px 0px 8px;
+}
+.phrase-container {
+	/*display: inline-block;*/
+	float: left;
+	position: relative;
+	top: 0px;
+	background: transparent;
+}
+
+/* To animate the clear-diary button effect */
+.fade {
+	position: relative;
+	animation: clearDiaryFade;
+	animation-duration: .75s;
+	animation-timing-function: ease-in-out;
+	animation-fill-mode: forwards;
+}
+/* Delay animation based on child positioning */
+.fade:nth-child(4n)   { animation-delay: 0s; }
+.fade:nth-child(4n+1) { animation-delay: .05s; }
+.fade:nth-child(4n+3) { animation-delay: .1s; }
+.fade:nth-child(4n+2) { animation-delay: .2s; }
+/* The animation itself */
+@keyframes clearDiaryFade {
+	to {
+		opacity: 0;
+		top: 40vh;
+	} 
+}
+
+.sidebar {
+	flex: 1;
+}
+
+.phrases-container {
+	display: inline-block;
+	line-height: 0;
+	/*align-self: flex-end;*/ /* stick to the bottom of the screen */
+	/*margin-bottom: 20px;*/
+	overflow: auto;
+	height: inherit;
+	/*margin-right: 40px;*/
+}
+
+/* Force the scrollbar to appear, even on macOS */
+/* Via http://jsfiddle.net/jeremy/Eh7xT/342/ */
+.phrases-container::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+.phrases-container::-webkit-scrollbar:vertical {
+    width: 11px;
+}
+.phrases-container::-webkit-scrollbar:horizontal {
+    height: 11px;
+}
+.phrases-container::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white; /* should match background, can't be transparent */
+    background-color: rgba(0, 0, 0, .5);
+}
+
+button {
+	border: none;
+	outline: none; /* Prevent weird blue highlight for buttons */
+	/*opacity: 1;*/
+}
+button:not(.phrase):hover {
+	opacity: .5;
+}
+.phrase-container {
+	border: none;
+	opacity: 1;
+}
+.phrase-container:hover {
+	opacity: .5;
+}
+
+/* Make the p5js canvas fullscreen */
+canvas {
+	position: fixed; 
+	top: 0; 
+	left: 0; 
+	z-index: 1; 
+} 
+#canvas {
+	position: relative; 
+	z-index: 2; 
+}

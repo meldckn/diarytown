@@ -150,6 +150,10 @@ body {
 	margin-left: 0px;
 	border-top-left-radius: 100px 30px;
 }
+/* All contents of diary pages should be on top */
+.diary-page>* {
+    z-index: 2;
+}
 #clear-diary {
     position: absolute;
     top: .5rem;
@@ -170,6 +174,7 @@ body {
 	overflow: auto;
 	height: inherit;
 	width: 100%;
+	padding:4px;
 }
 #dateline {
 	text-align: left;
@@ -207,13 +212,46 @@ body {
 	float: left;
 	top: 0px;
 	position: relative;
-	padding: 5px 10px;
+	padding: 7px 10px;
 	margin: 3px;
+	text-align: left;
 	border-radius: 8px;
 	font-size: small;
+	box-shadow: 0 0px 0px 0px rgba(0, 0, 0, 0.2), 0 0px 7px 0 rgba(0, 0, 0, 0.19);
 }
+.phrase p {
+	margin: 0;
+    display: inline-block;
+}
+.inner-slot {
+	background: inherit;
+	height: .8rem;
+	/*height: inherit;*/
+    border-radius: 0.2rem;
+    margin-left: .3rem;
+    padding: 0;
+    min-width: .3rem;
+}
+/* Phrases inside of a phrase slot */
+#diary .phrase .inner-slot button {
+    padding: 2px 5px;
+    top: -2px;
+    /*top: 1px;*/
+    margin: 0 2px;
+    border: white;
+    border-width: 1px;
+}
+.empty-indicator {
+	background: white;
+	border-radius: .3rem;
+	height: .3rem;
+	width: .3rem;
+	margin: .3rem;
+}
+
 /* Right-pointing arrow after modifiers 
    by setting the backgrounds of three borders to transparent */
+/*
 .phrase-container-modifier::after{
 	content: "";
     display: inline-block;
@@ -222,21 +260,31 @@ body {
 	height: 0; 
 	top: 3px;
 	border-bottom: 13px solid transparent;  /* left arrow slant */
-	border-top: 13px solid transparent; /* right arrow slant */
-	border-left: 8px solid darkturquoise; /* bottom, add background color here */
-	font-size: 0;
+	/*border-top: 13px solid transparent;*/ /* right arrow slant */
+	/*border-left: 8px solid darkturquoise;*/ /* bottom, add background color here */
+	/*font-size: 0;
 	line-height: 0;
 }
 .phrase.modifier {
 	margin: 3px 0px 3px 3px;
     border-radius: 8px 0px 0px 8px;
-}
+} */
 .phrase-container {
 	/*display: inline-block;*/
 	float: left;
 	position: relative;
 	top: 0px;
 	background: transparent;
+	z-index: 2;
+}
+
+svg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 1;
 }
 
 /* To animate the clear-diary button effect */
@@ -271,6 +319,7 @@ body {
 	/*margin-bottom: 20px;*/
 	overflow: auto;
 	height: inherit;
+	padding:4px;
 	/*margin-right: 40px;*/
 }
 

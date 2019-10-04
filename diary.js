@@ -24,6 +24,10 @@ function removeAllClasses (element) {
 	}
 }
 
+function insertAfter(afterNode, beforeNode) {
+    beforeNode.parentNode.insertBefore(afterNode, beforeNode.nextSibling);
+}
+
 ///
 
 /// Sortable library stuff
@@ -32,16 +36,68 @@ let diary = document.getElementById('diary');
 let library = document.querySelector('.library'); // Might eventually be multiple lists
 let trash = document.getElementById('trash');
 
+let innerSortableObject = {
+	group: {
+		name: "inner",
+		pull: ["trash", "diary", "inner"], // ability to move from the list 
+		put: ["library", "diary", "inner"], // whether elements can be added from other lists
+		revertClone: true,
+	},
+	animation: 200,
+	fallbackOnBody: true,
+	swapThreshold: 0.65,
+	sort: true,
+	// px, distance mouse must be from empty sortable to insert drag element into 
+	emptyInsertThreshold: 10,
+	onAdd: function (evt) {
+		console.log("something added to inner");
+		//evt.to.style.background = 'inherit';
+		evt.to.querySelector('.empty-indicator').style.display = 'none';
+	},
+	// Element is removed from the list into another list
+	onRemove: function (evt) {
+		console.log(evt.from, evt.from.childNodes.length);
+		// if list is empty, add a '+'
+		if (evt.from.childNodes.length <= 1) {
+			//evt.from.style.background = 'white';
+			evt.to.querySelector('.empty-indicator').style.display = 'block';
+		}
+	}
+};
+
 Sortable.create( diary, {
 	animation: 200, 
 	group: {
 		name: "diary",
-		pull: ["trash"], // ability to move from the list 
-		put: ["library"], // whether elements can be added from other lists
+		pull: ["trash", "inner"], // ability to move from diary 
+		put: ["library", "inner"], // whether elements can be added from other lists
 		revertClone: true,
 	},
+	fallbackOnBody: true,
+	swapThreshold: 0.65,
 	ghostClass: 'dragGhost',
-	sort: true
+	sort: true,
+	onAdd: function (evt) {
+		// When a phrase is dropped into the diary
+		// TODO if evt.item is a modifier/connector
+		// ..add a '(' to its inner html
+		// ..and create a new .phrase element for ')'
+		//createPhraseBuddies(evt.item);
+
+		// Loop through each nested sortable element (inner-slots)
+		let innerSlots = Array.from(evt.item.querySelectorAll('.inner-slot'));
+
+		for (var i = 0; i < innerSlots.length; i++) {
+			console.log("inner slot", innerSlots[i]);
+			Sortable.create(innerSlots[i], innerSortableObject);
+		}
+
+	},
+	// Called by any change to the list (add / update / remove)
+	onSort: function (evt) {
+		// Update the buddy lines
+
+	},
 });
 
 // A pseudo-list to enable drag-and-dropping from diary to trash
@@ -54,7 +110,7 @@ Sortable.create( trash, {
 	group: {
 		name: "trash",
 		pull: false,
-		put: ["diary"]
+		put: ["diary","inner"]
 	},
 	ghostClass: 'trashGhost', // Set display:none 
 	//dragClass: 'dragoverTrash',
@@ -62,6 +118,8 @@ Sortable.create( trash, {
 	onAdd: function (evt) {
 		// When a phrase is dropped into the trash "list"
 		evt.item.remove();
+
+		// TODO if evt.item is a modifier/connector, also remove associated ()s
 	}
 });
 
@@ -95,7 +153,6 @@ Sortable.create( library, {
   		evt.newIndex;  // element's new index within new parent
   		evt.oldDraggableIndex; // element's old index within old parent, only counting draggable elements
   		evt.newDraggableIndex; // element's new index within new parent, only counting draggable elements
-  		evt.clone // the clone element
   		evt.pullMode;  // when item is in another sortable: `"clone"` if cloning, `true` if moving
   	}
 });
@@ -109,6 +166,7 @@ Sortable.create( library, {
 
 DataWrangler.init();
 displayPhrases (DataWrangler.getAllPhrases());
+
 
 /// Date stuff
 
@@ -146,24 +204,39 @@ document.querySelector('#clear-diary').onclick = function () {
 
 // Display and add listeners to each phrase in the library
 function displayPhrases (phraseLibrary) {
-	var elements = [];
-	phraseLibrary.forEach( function(phrase) {
-		let container = document.createElement("div");
-		container.classList.add("phrase-container-"+phrase["category"]);
-		container.classList.add("phrase-container");
-		container.id = phrase["id"];
-		container.draggable = true;
-		let element = document.createElement("button");
-		element.className = "phrase " + phrase["category"];
-    	element.innerHTML = phrase["text"][0];
-    	
-    	//element.style.transform = "rotate("+ random(-5,5) +"deg)";
+	phraseLibrary.forEach( (phrase) => { addPhraseToLibrary(phrase); });	
+}
 
-		container.addEventListener('click',addToDiary);
-   		//container.addEventListener('dragstart', dragStartFromLibrary);
-   		container.append(element);
-    	document.querySelector('.phrases-container').append(container);
-	});	
+function addPhraseToLibrary (phraseObj) {
+	let container = document.createElement("div");
+	container.classList.add("phrase-container-"+phraseObj["category"]);
+	container.classList.add("phrase-container");
+	container.id = phraseObj["id"];
+	container.draggable = true;
+	let element = document.createElement("button");
+	element.className = "phrase " + phraseObj["category"];
+	let p = document.createElement("p");
+	p.innerHTML = phraseObj["text"][0];
+	element.append(p);
+
+	// Add inner slots
+	if (phraseObj["id"] === "caused") {
+		element.innerHTML += "  ";
+		let innerSlot = document.createElement("button");
+		innerSlot.className = "inner-slot";
+		//innerSlot.style.background = 'white';
+		let emptyIndicator = document.createElement("div");
+		emptyIndicator.className = "empty-indicator";
+		innerSlot.append(emptyIndicator);
+		element.append(innerSlot);
+	}
+	
+	//element.style.transform = "rotate("+ random(-5,5) +"deg)";
+
+	container.addEventListener('click',addToDiary);
+		//container.addEventListener('dragstart', dragStartFromLibrary);
+		container.append(element);
+	document.querySelector('.phrases-container').append(container);
 }
 
 // // Global variable containing the currently dragged element
@@ -243,7 +316,69 @@ function addToDiary () {
 	// TODO See if we can simulate a drag-to-diary action here
 
 	document.querySelector('#diary').append(newPhrase);
-	newPhrase.classList.add("dragged");
+	//createPhraseBuddies(newPhrase);
 
+	// Loop through each nested sortable element (inner-slots)
+	let innerSlots = Array.from(newPhrase.querySelectorAll('.inner-slot'));
+
+	for (var i = 0; i < innerSlots.length; i++) {
+		Sortable.create ( innerSlots[i], innerSortableObject);
+	}
+
+	// TODO Fix animation here?
+	newPhrase.classList.add("dragged");
 	setTimeout(newPhrase.classList.remove("dragged"), 5000);
 }
+
+// Sets SVG attributes given in obj for a new line
+function Line(obj){
+    let line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    for (property in obj) {
+        line.setAttribute(property, obj[property])  
+    }
+    return line;
+}
+
+// If a phrase just added to the diary is a modifier/connector
+// ..add a '(' to its inner html
+// ..and create a new .phrase element for ')'
+function createPhraseBuddies(phrase) {
+
+	// Check if modifier or connector
+	// TODO instead check beforeContext and afterContext
+	let phraseData = DataWrangler.getPhraseById(phrase.id);
+	if (phraseData.type === 'modifier') {
+
+		let innerPhrase = phrase.querySelector('button');
+		let phraseColor = getComputedStyle(innerPhrase).backgroundColor;
+
+		innerPhrase.innerHTML += " (";
+
+		// Deeply clone the original phrase that was clicked on (w/ all children)
+		// (doesn't clone event listeners)
+		let buddy = phrase.cloneNode(true);
+		let innerBuddy = buddy.querySelector('button');
+		innerBuddy.innerHTML = ")";
+
+		insertAfter(buddy,phrase);
+
+		// Make svg line between phrase and buddy
+		let phraseRect = phrase.getBoundingClientRect();
+		let buddyRect  = buddy.getBoundingClientRect();
+
+		// Make new SVG 
+		let svg = document.getElementById('svg');
+
+		let line = new Line ({
+			'id': phrase.id + '-line',
+		    'x1': phraseRect.x + phraseRect.width/2,
+			'y1': phraseRect.y + phraseRect.height/2,
+			'x2': buddyRect.x + buddyRect.width/2,
+			'y2': buddyRect.y + buddyRect.height/2,
+			"stroke": phraseColor,
+			"stroke-width": '3px'
+		});
+    	svg.append(line);
+	}
+}
+

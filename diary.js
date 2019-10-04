@@ -35,31 +35,36 @@ function insertAfter(afterNode, beforeNode) {
 let diary = document.getElementById('diary');
 let library = document.querySelector('.library'); // Might eventually be multiple lists
 let trash = document.getElementById('trash');
-
+ 
+// TODO since this doesn't allow arbitrarily nested inner slots,
+// might try making different Sortable group for each inner slot (by incrementing an id)?
+// and then connecting all existing inner slot groups
+// --Would also need to rework CSS probably
+// TODO ** Instead of inner sortable slots (since they make for small targets)
+// make it so when you drag and drop something over a phrase with a slot, 
+// it gets added to that slot (by hand; don't make inner slots Sortable lists).
+// if there are multiple slots in phrase, check mouse position relative to boundingRect
 let innerSortableObject = {
 	group: {
 		name: "inner",
-		pull: ["trash", "diary", "inner"], // ability to move from the list 
+		pull: ["trash", "diary", "inner"], // ability to move from inner slot 
 		put: ["library", "diary", "inner"], // whether elements can be added from other lists
 		revertClone: true,
 	},
 	animation: 200,
-	fallbackOnBody: true,
-	swapThreshold: 0.65,
+	//fallbackOnBody: true,
 	sort: true,
 	// px, distance mouse must be from empty sortable to insert drag element into 
-	emptyInsertThreshold: 10,
+	emptyInsertThreshold: 20,
 	onAdd: function (evt) {
-		console.log("something added to inner");
-		//evt.to.style.background = 'inherit';
 		evt.to.querySelector('.empty-indicator').style.display = 'none';
 	},
 	// Element is removed from the list into another list
 	onRemove: function (evt) {
 		console.log(evt.from, evt.from.childNodes.length);
-		// if list is empty, add a '+'
+		// if list is empty, show empty indicator symbol
+		// TODO try doing this onChange so it's updated during the drag
 		if (evt.from.childNodes.length <= 1) {
-			//evt.from.style.background = 'white';
 			evt.to.querySelector('.empty-indicator').style.display = 'block';
 		}
 	}
@@ -74,7 +79,8 @@ Sortable.create( diary, {
 		revertClone: true,
 	},
 	fallbackOnBody: true,
-	swapThreshold: 0.65,
+	swapThreshold: 0.1,
+	invertSwap: true,
 	ghostClass: 'dragGhost',
 	sort: true,
 	onAdd: function (evt) {

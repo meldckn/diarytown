@@ -16,6 +16,7 @@
 body {			background-color: var(--bkgd); }
 .diary-page { 	background: white; /* papayawhip, seashell, or snow when on white, or floralwhite or cornsilk on lavendar*/ 
 				border-color: var(--bkgd); }
+.half-page-left { background: white; }
 .diary-phrase { background: lavender; } /* transition: .5s ease-out all;} */
 .diary-phrase.highlight { background: #ceceff; }
 .dragGhost { 
@@ -69,15 +70,15 @@ body {
 	width: 100vw;
 }
 
-.diary-page {
+.half-page {
 	flex: 1; /* Size relative to the divs to the left and right */ 
-	padding: 50px;
 	display: flex;
 	flex-wrap: wrap;
-	max-width: 30vw;
-	height: 50vh;
-	border-style: solid;
-	border-width: 1px;
+	/*max-width: 30vw;
+	height: 50vh;*/
+	height: 100vh;
+	/*border-style: solid;
+	border-width: 1px;*/
 }
 
 /* Diagonal stacked paper effect */
@@ -109,37 +110,17 @@ body {
 /* Second sheet of diary-page */
 .diary-page::before {
   top: 7px;
+  left: 7px;
   z-index: -1;
-  width: 101.55%;
+  width: 100%;
 }
 /* Third sheet of diary-page */
 .diary-page::after {
   top: 14px;
+  left: 14px;
   z-index: -2;
-  width: 103%;
+  width: 100%;
 }
-/* Right side pages */
-.diary-page.page-right::before,
-.diary-page.page-right::after {
-	border-top-left-radius: 100px 30px;
-}
-.diary-page.page-right::before {
-	left: -1px;
-}
-.diary-page.page-right::after {
-	left: -1px;
-} 
-/* Left side pages */
-.diary-page.page-left::before,
-.diary-page.page-left::after {
-	border-top-right-radius: 100px 30px;
-}
-.diary-page.page-left::before {
-	left: -9px;
-}
-.diary-page.page-left::after {
-	left: -16px;
-} 
 
 
 .page-left {
@@ -148,7 +129,14 @@ body {
 }
 .page-right {
 	margin-left: 0px;
-	border-top-left-radius: 100px 30px;
+	/*border-top-left-radius: 100px 30px;*/
+}
+
+.diary-page {
+	margin: auto;
+	width: 65%;
+    height: 60%;
+    padding: 5%;
 }
 /* All contents of diary pages should be on top */
 .diary-page>* {
@@ -172,7 +160,7 @@ body {
 	margin-top: auto;
 	margin-bottom: auto;
 	overflow: auto;
-	height: inherit;
+	height: 90%;
 	width: 100%;
 	padding:4px;
 }
@@ -318,9 +306,10 @@ svg {
 	/*align-self: flex-end;*/ /* stick to the bottom of the screen */
 	/*margin-bottom: 20px;*/
 	overflow: auto;
-	height: inherit;
+	height: 80%;
 	padding:4px;
 	/*margin-right: 40px;*/
+	margin: auto 4vw;
 }
 
 /* Force the scrollbar to appear, even on macOS */

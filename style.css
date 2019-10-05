@@ -257,22 +257,13 @@ body {
 	margin: 3px 0px 3px 3px;
     border-radius: 8px 0px 0px 8px;
 } */
+/* Container for a single phrase */
 .phrase-container {
-	/*display: inline-block;*/
 	float: left;
 	position: relative;
 	top: 0px;
 	background: transparent;
 	z-index: 2;
-}
-
-svg {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	z-index: 1;
 }
 
 /* To animate the clear-diary button effect */
@@ -300,35 +291,87 @@ svg {
 	flex: 1;
 }
 
-.phrases-container {
-	display: inline-block;
-	line-height: 0;
-	/*align-self: flex-end;*/ /* stick to the bottom of the screen */
-	/*margin-bottom: 20px;*/
+/* Phrases Library */
+
+.categories-container {
+	display: flex;
+	flex-flow: row wrap;
 	overflow: auto;
 	height: 80%;
-	padding:4px;
-	/*margin-right: 40px;*/
 	margin: auto 4vw;
+}
+.category {
+	/* flex-basis: default size of an element before the remaining space is distributed */
+	flex-basis: 100%;
+	display: inline-block;
+	line-height: 0;
+	overflow: auto;
+	padding:4px;
+	padding-bottom: 10px;
+}
+.category h2 {
+	font-size: small;
+    font-weight: lighter;
+    letter-spacing: .1rem;
+    font-variant: all-small-caps;
+    margin-left: .5rem;
+    margin-bottom: 1rem;
+}
+
+/* Medium screens */
+@media all and (min-width: 900px) {
+	/* Top two categories share a row */
+	.category.small-category { 
+		flex: 1; /* instead of 100% flex-basis, equally share one row */
+		border-bottom: lavender;
+	    border-bottom-width: 1px;
+	    border-bottom-style: solid;
+	    padding-bottom: 15px;
+	}
+	.small-category:nth-child(odd) { 
+		border-right: lavender;
+	    border-right-width: 1px;
+	    border-right-style: solid;
+	    padding-right: 15px;
+	}
+	.small-category:nth-child(even) { 
+	    padding-left: 15px;
+	}
+	#events { 
+		padding-top: 10px;
+	}
+}
+
+/* Large screens */
+@media all and (min-width: 800px) {
+  /* We invert order of first sidebar and main
+   * And tell the main element to take twice as much width as the other two sidebars 
+   */
+/*  .main { flex: 2 0px; }
+  .aside-1 { order: 1; }
+  .main    { order: 2; }
+  .aside-2 { order: 3; }
+  .footer  { order: 4; }*/
 }
 
 /* Force the scrollbar to appear, even on macOS */
 /* Via http://jsfiddle.net/jeremy/Eh7xT/342/ */
-.phrases-container::-webkit-scrollbar {
+.container::-webkit-scrollbar {
     -webkit-appearance: none;
 }
-.phrases-container::-webkit-scrollbar:vertical {
+.container::-webkit-scrollbar:vertical {
     width: 11px;
 }
-.phrases-container::-webkit-scrollbar:horizontal {
+.container::-webkit-scrollbar:horizontal {
     height: 11px;
 }
-.phrases-container::-webkit-scrollbar-thumb {
+.container::-webkit-scrollbar-thumb {
     border-radius: 8px;
     border: 2px solid white; /* should match background, can't be transparent */
     background-color: rgba(0, 0, 0, .5);
 }
 
+/* TODO dont use opacity for hover effect */
 button {
 	border: none;
 	outline: none; /* Prevent weird blue highlight for buttons */
@@ -345,14 +388,11 @@ button:not(.phrase):hover {
 	opacity: .5;
 }
 
-/* Make the p5js canvas fullscreen */
-canvas {
-	position: fixed; 
-	top: 0; 
-	left: 0; 
-	z-index: 1; 
-} 
-#canvas {
-	position: relative; 
-	z-index: 2; 
+svg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 1;
 }

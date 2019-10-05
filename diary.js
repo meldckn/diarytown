@@ -70,6 +70,46 @@ let innerSortableObject = {
 	}
 };
 
+// TODO play a lookatme effect on diary page when library phrase picked up?
+// (if not right away, could trigger after some amount of time while picked up?)
+let librarySortableObject = {
+	animation: 200,
+	group: {
+		name: "library",
+		pull: "clone", // ability to copy from the list 
+		put: false, // whether elements can be added from other lists
+		revertClone: true // revert cloned element to initial position after moving to a another list
+	},
+	ghostClass: 'dragGhost',
+	dragClass: 'dragging',
+	sort: false,
+	// Element dragging started
+	onStart: function (evt) {
+		evt.item.classList.add('dragging');  // element index within parent
+	},
+	// Element dragging ended (dragged HTMLElement: evt.item)
+	onEnd: function (evt) {
+		// Remove event listeners from dragged element, put a new one on the clone
+		// (Because the clone is added to the library, the original element is dragged away)
+		evt.item.removeEventListener('click',addToDiary);
+		evt.clone.addEventListener('click',addToDiary);
+
+  		evt.to;    // target list
+  		evt.from;  // previous list
+  		evt.oldIndex;  // element's old index within old parent
+  		evt.newIndex;  // element's new index within new parent
+  		evt.oldDraggableIndex; // element's old index within old parent, only counting draggable elements
+  		evt.newDraggableIndex; // element's new index within new parent, only counting draggable elements
+  		evt.pullMode;  // when item is in another sortable: `"clone"` if cloning, `true` if moving
+	}
+};
+
+// Make each library category Sortable
+let libraries = Array.from(document.querySelectorAll('.library'));
+libraries.forEach( (library) => {
+	Sortable.create ( library, librarySortableObject);
+});
+
 Sortable.create( diary, {
 	animation: 200, 
 	group: {
@@ -90,13 +130,11 @@ Sortable.create( diary, {
 		// ..and create a new .phrase element for ')'
 		//createPhraseBuddies(evt.item);
 
-		// Loop through each nested sortable element (inner-slots)
+		// Make each nested inner slot Sortable
 		let innerSlots = Array.from(evt.item.querySelectorAll('.inner-slot'));
-
-		for (var i = 0; i < innerSlots.length; i++) {
-			console.log("inner slot", innerSlots[i]);
-			Sortable.create(innerSlots[i], innerSortableObject);
-		}
+		innerSlots.forEach( (innerSlot) => {
+			Sortable.create(innerSlot, innerSortableObject);
+		});
 
 	},
 	// Called by any change to the list (add / update / remove)
@@ -129,40 +167,6 @@ Sortable.create( trash, {
 	}
 });
 
-// TODO play a lookatme effect on diary page when library phrase picked up?
-// (if not right away, could trigger after some amount of time while picked up?)
-Sortable.create( library, {
-	animation: 200,
-	group: {
-		name: "library",
-		pull: "clone", // ability to copy from the list 
-		put: false, // whether elements can be added from other lists
-		revertClone: true // revert cloned element to initial position after moving to a another list
-	},
-	ghostClass: 'dragGhost',
-	dragClass: 'dragging',
-	sort: false,
-	// Element dragging started
-	onStart: function (evt) {
-		evt.item.classList.add('dragging');  // element index within parent
-	},
-	// Element dragging ended (dragged HTMLElement: evt.item)
-	onEnd: function (evt) {
-		// Remove event listeners from dragged element, put a new one on the clone
-		// (Because the clone is added to the library, the original element is dragged away)
-		evt.item.removeEventListener('click',addToDiary);
-		evt.clone.addEventListener('click',addToDiary);
-
-  		evt.to;    // target list
-  		evt.from;  // previous list
-  		evt.oldIndex;  // element's old index within old parent
-  		evt.newIndex;  // element's new index within new parent
-  		evt.oldDraggableIndex; // element's old index within old parent, only counting draggable elements
-  		evt.newDraggableIndex; // element's new index within new parent, only counting draggable elements
-  		evt.pullMode;  // when item is in another sortable: `"clone"` if cloning, `true` if moving
-  	}
-});
-
 // TODO Ability to drag diary phrases to a trashcan 
 // (icon in the bottom right corner of diary page?)
 
@@ -171,7 +175,7 @@ Sortable.create( library, {
 
 
 DataWrangler.init();
-displayPhrases (DataWrangler.getAllPhrases());
+makeLibrary();
 
 
 /// Date stuff
@@ -209,11 +213,25 @@ document.querySelector('#clear-diary').onclick = function () {
 }
 
 // Display and add listeners to each phrase in the library
-function displayPhrases (phraseLibrary) {
-	phraseLibrary.forEach( (phrase) => { addPhraseToLibrary(phrase); });	
+function makeLibrary () {
+	// TODO sort phrases in each category by something reasonable
+	addPhrasesToCategory (['modifier'], 'modifiers');
+	addPhrasesToCategory (['connector'], 'connectors');
+	addPhrasesToCategory (['event','action'], 'events', 'text');
 }
 
-function addPhraseToLibrary (phraseObj) {
+// Add phrases of type given in phraseTypes (an array of phrase types),
+// into HTML element with given category id. Optionally sort them by given field.
+function addPhrasesToCategory (phraseTypes, category, sortBy='id') {
+	let phrases = DataWrangler.getPhrasesByTypes(phraseTypes, sortBy);
+	phrases.forEach ( (phrase) => {
+		addPhraseToLibrary (phrase, category);
+	})
+}
+
+// Create the html for a given phrase data object,
+// and append it to the element with the given category id
+function addPhraseToLibrary (phraseObj, category) {
 	let container = document.createElement("div");
 	container.classList.add("phrase-container-"+phraseObj["category"]);
 	container.classList.add("phrase-container");
@@ -242,7 +260,7 @@ function addPhraseToLibrary (phraseObj) {
 	container.addEventListener('click',addToDiary);
 		//container.addEventListener('dragstart', dragStartFromLibrary);
 		container.append(element);
-	document.querySelector('.phrases-container').append(container);
+	document.querySelector('#'+category).append(container);
 }
 
 // // Global variable containing the currently dragged element

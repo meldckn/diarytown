@@ -239,28 +239,42 @@ function addPhraseToLibrary (phraseObj, category) {
 	container.draggable = true;
 	let element = document.createElement("button");
 	element.className = "phrase " + phraseObj["category"];
-	let p = document.createElement("p");
-	p.innerHTML = phraseObj["text"][0];
-	element.append(p);
 
-	// Add inner slots
-	if (phraseObj["id"] === "caused") {
-		element.innerHTML += "  ";
-		let innerSlot = document.createElement("button");
-		innerSlot.className = "inner-slot";
-		//innerSlot.style.background = 'white';
-		let emptyIndicator = document.createElement("div");
-		emptyIndicator.className = "empty-indicator";
-		innerSlot.append(emptyIndicator);
-		element.append(innerSlot);
-	}
+	// Parse all #tags and text in between and around #tags
+	const regex = /(#[a-z]*)|([a-z' ]+)/gim;
+	let str = phraseObj["text"][0];
+	let matches = str.match(regex);
+
+	matches.forEach((match, groupIndex) => {
+		// If match is a #tag, add an inner slot
+		if (match.startsWith('#')) {
+			element.append(makeInnerSlot());
+		} else {
+			// Add text as <p>
+			let p = document.createElement("p");
+			p.innerHTML = match;
+			element.append(p);
+		}
+	});
 	
 	//element.style.transform = "rotate("+ random(-5,5) +"deg)";
 
 	container.addEventListener('click',addToDiary);
-		//container.addEventListener('dragstart', dragStartFromLibrary);
-		container.append(element);
+	//container.addEventListener('dragstart', dragStartFromLibrary);
+	container.append(element);
 	document.querySelector('#'+category).append(container);
+}
+
+// Make and return an inner slot element
+function makeInnerSlot () {
+	//element.innerHTML += "  ";
+	let innerSlot = document.createElement("button");
+	innerSlot.className = "inner-slot";
+	//innerSlot.style.background = 'white';
+	let emptyIndicator = document.createElement("div");
+	emptyIndicator.className = "empty-indicator";
+	innerSlot.append(emptyIndicator);
+	return innerSlot;
 }
 
 // // Global variable containing the currently dragged element

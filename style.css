@@ -216,9 +216,15 @@ body {
 	height: .8rem;
 	/*height: inherit;*/
     border-radius: 0.2rem;
-    margin-left: .3rem;
+    margin: 0 .2rem;
     padding: 0;
     min-width: .3rem;
+}
+.inner-slot:first-child {
+	margin-left: 0;
+}
+.inner-slot:last-child {
+	margin-right: 0;
 }
 /* Phrases inside of a phrase slot */
 #diary .phrase .inner-slot button {

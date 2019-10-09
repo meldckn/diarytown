@@ -57,6 +57,7 @@ var DataWrangler = (function () {
 	}
 
 	function sortByDefaultText (a,b) {
+		// TODO ignore leading #s
 		// ignore case
 		a = a.text[0].toUpperCase(); 
 		b = b.text[0].toUpperCase(); 

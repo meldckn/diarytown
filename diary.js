@@ -35,6 +35,7 @@ function insertAfter(afterNode, beforeNode) {
 let diary = document.getElementById('diary');
 let library = document.querySelector('.library'); // Might eventually be multiple lists
 let trash = document.getElementById('trash');
+trash.draggable = false;
  
 // TODO since this doesn't allow arbitrarily nested inner slots,
 // might try making different Sortable group for each inner slot (by incrementing an id)?
@@ -47,8 +48,8 @@ let trash = document.getElementById('trash');
 let innerSortableObject = {
 	group: {
 		name: "inner",
-		pull: ["trash", "diary", "inner"], // ability to move from inner slot 
-		put: ["library", "diary", "inner"], // whether elements can be added from other lists
+		pull: ["trash", "diary", "inner"], // lists that can pull from any inner slot 
+		put: ["library", "diary", "inner"], // lists that can add to any inner slot
 		revertClone: true,
 	},
 	animation: 200,
@@ -56,16 +57,17 @@ let innerSortableObject = {
 	sort: true,
 	// px, distance mouse must be from empty sortable to insert drag element into 
 	emptyInsertThreshold: 20,
+	filter: ".empty-indicator",  // Selectors that do not lead to dragging
 	onAdd: function (evt) {
-		evt.to.querySelector('.empty-indicator').style.display = 'none';
+		// Use :scope selector to select only direct children, not descendants
+		evt.to.querySelector(':scope > .empty-indicator').style.display = "none";;
 	},
 	// Element is removed from the list into another list
 	onRemove: function (evt) {
-		console.log(evt.from, evt.from.childNodes.length);
 		// if list is empty, show empty indicator symbol
-		// TODO try doing this onChange so it's updated during the drag
+		// TODO try doing this onChange so it's updated during the drag?
 		if (evt.from.childNodes.length <= 1) {
-			evt.to.querySelector('.empty-indicator').style.display = 'block';
+			evt.from.querySelector(':scope > .empty-indicator').style.display = 'block';
 		}
 	}
 };
@@ -77,16 +79,20 @@ let librarySortableObject = {
 	group: {
 		name: "library",
 		pull: "clone", // ability to copy from the list 
-		put: false, // whether elements can be added from other lists
+		put: false, // no list can add to library
 		revertClone: true // revert cloned element to initial position after moving to a another list
 	},
-	ghostClass: 'dragGhost',
+	//ghostClass: 'dragGhost',
 	dragClass: 'dragging',
 	sort: false,
 	// Element dragging started
 	onStart: function (evt) {
 		evt.item.classList.add('dragging');  // element index within parent
 	},
+	// TODO replace event listeners on original even if you don't finish dragging successfully
+	// Investigate what function fires when you drag a library phrase outside of library
+	// but not in diary
+
 	// Element dragging ended (dragged HTMLElement: evt.item)
 	onEnd: function (evt) {
 		// Remove event listeners from dragged element, put a new one on the clone
@@ -114,22 +120,17 @@ Sortable.create( diary, {
 	animation: 200, 
 	group: {
 		name: "diary",
-		pull: ["trash", "inner"], // ability to move from diary 
-		put: ["library", "inner"], // whether elements can be added from other lists
+		pull: ["trash", "inner"], // lists that can pull from diary 
+		put: ["library", "inner"], // lists that can add to diary
 		revertClone: true,
 	},
 	fallbackOnBody: true,
 	swapThreshold: 0.1,
 	invertSwap: true,
-	ghostClass: 'dragGhost',
+	//ghostClass: 'dragGhost',
 	sort: true,
 	onAdd: function (evt) {
 		// When a phrase is dropped into the diary
-		// TODO if evt.item is a modifier/connector
-		// ..add a '(' to its inner html
-		// ..and create a new .phrase element for ')'
-		//createPhraseBuddies(evt.item);
-
 		// Make each nested inner slot Sortable
 		let innerSlots = Array.from(evt.item.querySelectorAll('.inner-slot'));
 		innerSlots.forEach( (innerSlot) => {
@@ -139,8 +140,6 @@ Sortable.create( diary, {
 	},
 	// Called by any change to the list (add / update / remove)
 	onSort: function (evt) {
-		// Update the buddy lines
-
 	},
 });
 
@@ -159,13 +158,22 @@ Sortable.create( trash, {
 	ghostClass: 'trashGhost', // Set display:none 
 	//dragClass: 'dragoverTrash',
 	sort: false,
+	filter: "#trash", // Selectors that do not lead to dragging
 	onAdd: function (evt) {
 		// When a phrase is dropped into the trash "list"
 		evt.item.remove();
-
-		// TODO if evt.item is a modifier/connector, also remove associated ()s
+	},
+	// Event when you move an item in the list or between lists
+	onUpdate: function (/**Event*/evt, /**Event*/originalEvent) {
+		console.log ("Trash onUpdate");		
 	}
 });
+
+/*trash.addEventListener('dragover', dragOverTrash);
+function dragOverTrash (ev) {
+	console.log("dragged over trash", ev);
+	ev.preventDefault();
+}*/
 
 // TODO Ability to drag diary phrases to a trashcan 
 // (icon in the bottom right corner of diary page?)
@@ -240,7 +248,7 @@ function addPhraseToLibrary (phraseObj, category) {
 	let element = document.createElement("button");
 	element.className = "phrase " + phraseObj["category"];
 
-	// Parse all #tags and text in between and around #tags
+	// Parse all inner slot #tags and text in between and around them
 	const regex = /(#[a-z]*)|([a-z' ]+)/gim;
 	let str = phraseObj["text"][0];
 	let matches = str.match(regex);
@@ -260,19 +268,20 @@ function addPhraseToLibrary (phraseObj, category) {
 	//element.style.transform = "rotate("+ random(-5,5) +"deg)";
 
 	container.addEventListener('click',addToDiary);
-	//container.addEventListener('dragstart', dragStartFromLibrary);
 	container.append(element);
 	document.querySelector('#'+category).append(container);
 }
 
 // Make and return an inner slot element
 function makeInnerSlot () {
-	//element.innerHTML += "  ";
 	let innerSlot = document.createElement("button");
 	innerSlot.className = "inner-slot";
+	// TODO set inner slot background color to slightly darker shade of parent's background
 	//innerSlot.style.background = 'white';
 	let emptyIndicator = document.createElement("div");
+	// TODO set visually different empty-indicators for different slot types
 	emptyIndicator.className = "empty-indicator";
+	emptyIndicator.draggable = false;
 	innerSlot.append(emptyIndicator);
 	return innerSlot;
 }
@@ -303,7 +312,7 @@ function makeInnerSlot () {
 // Set the drop target (the diary entry) by setting its dnd event listeners
 //let diaryPage = document.querySelector(".page-right");
 //diaryPage.addEventListener('dragover', dragOverDiary);
-//diaryPage.addEventListener('dragenter', dragEnterDiary);
+//diaryPage.addEventListener('dragenter', dragEnterTrash);
 //diaryPage.addEventListener('dragleave', dragLeaveDiary);
 //diaryPage.addEventListener('drop', dropInDiary);
 

@@ -59,15 +59,20 @@ let innerSortableObject = {
 	emptyInsertThreshold: 20,
 	filter: ".empty-indicator",  // Selectors that do not lead to dragging
 	onAdd: function (evt) {
+		// When a phrase is added to an inner slot, hide its empty-indicator
+		// and show a distinguishing background color
 		// Use :scope selector to select only direct children, not descendants
-		evt.to.querySelector(':scope > .empty-indicator').style.display = "none";;
+		evt.to.querySelector(':scope > .empty-indicator').style.display = "none";
+		// TODO slightly darken the inner slot's parent color for the inner slot background 
+		evt.to.style.background = "#00a6de"; 
 	},
 	// Element is removed from the list into another list
 	onRemove: function (evt) {
 		// if list is empty, show empty indicator symbol
 		// TODO try doing this onChange so it's updated during the drag?
-		if (evt.from.childNodes.length <= 1) {
-			evt.from.querySelector(':scope > .empty-indicator').style.display = 'block';
+		if (evt.from.children.length <= 1) {
+			evt.from.querySelector(':scope > .empty-indicator').style.display = "inline-block";
+			evt.from.style.background = "inherit";
 		}
 	}
 };
@@ -162,10 +167,6 @@ Sortable.create( trash, {
 	onAdd: function (evt) {
 		// When a phrase is dropped into the trash "list"
 		evt.item.remove();
-	},
-	// Event when you move an item in the list or between lists
-	onUpdate: function (/**Event*/evt, /**Event*/originalEvent) {
-		console.log ("Trash onUpdate");		
 	}
 });
 
@@ -256,7 +257,7 @@ function addPhraseToLibrary (phraseObj, category) {
 	matches.forEach((match, groupIndex) => {
 		// If match is a #tag, add an inner slot
 		if (match.startsWith('#')) {
-			element.append(makeInnerSlot());
+			element.append(makeInnerSlot(match.substr(1))); // Strip the '#'
 		} else {
 			// Add text as <p>
 			let p = document.createElement("p");
@@ -273,14 +274,35 @@ function addPhraseToLibrary (phraseObj, category) {
 }
 
 // Make and return an inner slot element
-function makeInnerSlot () {
+function makeInnerSlot (type) {
 	let innerSlot = document.createElement("button");
 	innerSlot.className = "inner-slot";
 	// TODO set inner slot background color to slightly darker shade of parent's background
 	//innerSlot.style.background = 'white';
 	let emptyIndicator = document.createElement("div");
 	// TODO set visually different empty-indicators for different slot types
-	emptyIndicator.className = "empty-indicator";
+
+	// Inner slot background starts off the same as its parent phrase
+	innerSlot.style.background = "inherit";
+
+	//console.log(type);
+	switch (type) {
+		case "someone": 
+			//<i class="fas fa-child empty-indicator"></i>
+			emptyIndicator = document.createElement("i");
+			emptyIndicator.className = "fas fa-child empty-indicator"; // or fa-user
+			emptyIndicator.style.color = "white";
+			break;
+		case "place":
+			emptyIndicator = document.createElement("i");
+			emptyIndicator.className = "fas fa-map-marker empty-indicator"; // or fa-home
+			emptyIndicator.style.color = "white";
+			break;
+		default: 
+			emptyIndicator = document.createElement("div");
+			emptyIndicator.className = "empty-indicator";
+			emptyIndicator.style.background = "white";
+	}
 	emptyIndicator.draggable = false;
 	innerSlot.append(emptyIndicator);
 	return innerSlot;
@@ -384,48 +406,5 @@ function Line(obj){
         line.setAttribute(property, obj[property])  
     }
     return line;
-}
-
-// If a phrase just added to the diary is a modifier/connector
-// ..add a '(' to its inner html
-// ..and create a new .phrase element for ')'
-function createPhraseBuddies(phrase) {
-
-	// Check if modifier or connector
-	// TODO instead check beforeContext and afterContext
-	let phraseData = DataWrangler.getPhraseById(phrase.id);
-	if (phraseData.type === 'modifier') {
-
-		let innerPhrase = phrase.querySelector('button');
-		let phraseColor = getComputedStyle(innerPhrase).backgroundColor;
-
-		innerPhrase.innerHTML += " (";
-
-		// Deeply clone the original phrase that was clicked on (w/ all children)
-		// (doesn't clone event listeners)
-		let buddy = phrase.cloneNode(true);
-		let innerBuddy = buddy.querySelector('button');
-		innerBuddy.innerHTML = ")";
-
-		insertAfter(buddy,phrase);
-
-		// Make svg line between phrase and buddy
-		let phraseRect = phrase.getBoundingClientRect();
-		let buddyRect  = buddy.getBoundingClientRect();
-
-		// Make new SVG 
-		let svg = document.getElementById('svg');
-
-		let line = new Line ({
-			'id': phrase.id + '-line',
-		    'x1': phraseRect.x + phraseRect.width/2,
-			'y1': phraseRect.y + phraseRect.height/2,
-			'x2': buddyRect.x + buddyRect.width/2,
-			'y2': buddyRect.y + buddyRect.height/2,
-			"stroke": phraseColor,
-			"stroke-width": '3px'
-		});
-    	svg.append(line);
-	}
 }
 

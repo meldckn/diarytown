@@ -35,9 +35,6 @@ body {			background-color: var(--bkgd); }
 .trashGhost {
 	display: none !important;
 }
-.trashGhost * {
-	display: none !important;
-}
 
 .phrase 				{ background: rgba(180,180,255,1); }
 .phrase.connector		{ background: deepskyblue; }
@@ -120,6 +117,8 @@ body {
 }
 
 .diary-page {
+	display: flex;
+    flex-direction: column;
 	margin: auto;
 	width: 65%;
     height: 60%;
@@ -144,11 +143,10 @@ body {
 	width: 100%;
 }
 #diary {
-	/*display: inline-block;*/
 	margin-top: auto;
 	margin-bottom: auto;
 	overflow: auto;
-	height: 90%;
+	height: 100%;
 	width: 100%;
 	padding:4px;
 }
@@ -159,9 +157,7 @@ body {
 	margin-bottom: 10px;
 }
 #trash {
-	position: absolute;
-    right: 1rem;
-    bottom: 1rem;
+    align-self: flex-end; /* bottom right corner */
     color: gray;
     background: transparent;
 }

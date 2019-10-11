@@ -1,3 +1,81 @@
+
+
+var people = [ 
+	{
+		name: "Melanie",
+		pronoun: "she",
+		relation: "self",
+		tags: ["quiet", "creative", "insecure", "dislikes authority"]
+	},{
+		name: "Neil",
+		pronoun: "he",
+		relation: "partner",
+		tags: ["mellow", "strong", "avoids drama", "goofy"]
+	},{
+		name: "Nybble",
+		pronoun: "she",
+		relation: "pet",
+		tags: ["small", "particular"]
+	},{
+		name: "Bit",
+		pronoun: "he",
+		relation: "pet",
+		tags: ["big", "loves pets", "cuddly"]
+	},{
+		name: "Mom",
+		pronoun: "she",
+		relation: "parent"
+	},{
+		name: "Dad",
+		pronoun: "he",
+		relation: "parent"
+	},{
+		name: "Alan",
+		pronoun: "he",
+		relation: "sibling"
+	},{
+		name: "Max",
+		pronoun: "they"
+	},{
+		name: "Barrett",
+		pronoun: "he"
+	},{
+		name: "Chloe",
+		pronoun: "she"
+	},{
+		name: "Nick",
+		pronoun: "he"
+	}
+];
+
+var places = [
+	{
+		name: "home",
+		type: "residence"
+	},{
+		name: "work",
+		type: "work"
+	},{
+		name: "Neary Lagoon",
+		type: "park"
+	},{
+		name: "Yan Flower House",
+		type: "residence"
+	},{
+		name: "Barrett's house",
+		type: "residence"
+	},{
+		name: "parent's house",
+		type: "residence"
+	},{
+		name: "bookshop",
+		type: "store"
+	},{
+		name: "beach",
+		type: "beach"
+	}
+];
+
 var phrases = [ 
 	{
 		id : "used-quality",
@@ -215,7 +293,11 @@ var phrases = [
 		emoji : "😒"
 	},{
 		id : "daydreamed",
-		text : [ "daydreamed" ],
+		text : [ "daydreamed", 
+				 "daydreamed about #event", 
+				 "daydreamed about #someone",
+				 "daydreamed about #place"
+				],
 		type : "action",
 		category : "self",
 		otherCategories : "",

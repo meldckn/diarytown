@@ -90,6 +90,7 @@ let librarySortableObject = {
 	//ghostClass: 'dragGhost',
 	dragClass: 'dragging',
 	sort: false,
+	filter: ".new-button",
 	// Element dragging started
 	onStart: function (evt) {
 		evt.item.classList.add('dragging');  // element index within parent
@@ -227,11 +228,69 @@ function makeLibrary () {
 	addPhrasesToCategory (['modifier'], 'modifiers');
 	addPhrasesToCategory (['connector'], 'connectors');
 	addPhrasesToCategory (['event','action'], 'events', 'text');
+	addItemsToCategory (people, 'people', 'person');
+	appendPlusButton ('people', 'person');
+	addItemsToCategory (places, 'places', 'place');
+	appendPlusButton ('places', 'place');
+}
+
+// Add all phrases defined by data objects in the items array 
+// to the library category with the given HTML id (e.g., "people").
+// - type is a string to add in classnames for the individual item HTML elements.
+// - each item in the items array should at least have a 'name' property. 
+function addItemsToCategory (items, category, type) {
+	items.forEach( (item) => addItemToCategory(item, category, type) );
+}
+
+// Add a given "simple" phrase (no inner slots) 
+// of a given type ("person", "place") 
+// to the library category with the given HTML id ("people", "places").
+// The item is an object with at least a 'name' property. 
+function addItemToCategory (item, category, type) {
+	let container = document.createElement("div");
+	container.classList.add("phrase-container-"+type);
+	container.classList.add("phrase-container");
+	// TODO eventually give each data and HTML item a numerical, generated ID 
+	// so we don't need to worry about names with spaces, special characters,
+	// or duplicate names.
+	//container.id = "person-"+person.id;
+	container.draggable = true;
+	let element = document.createElement("button");
+	element.classList.add("phrase");
+	element.classList.add(type);
+	let p = document.createElement("p");
+	p.innerHTML = item.name;
+	element.append(p);
+	container.addEventListener('click',addToDiary);
+	container.append(element);
+	document.querySelector('#'+category).append(container);
+}
+
+function appendPlusButton (category, type) {
+	let container = document.createElement("div");
+	container.classList.add("phrase-container-new");
+	container.classList.add("phrase-container");
+	//container.classList.add("new-button");
+	container.id = "new-"+type;
+	container.draggable = false;
+	let element = document.createElement("button");
+	element.classList.add("phrase");
+	element.classList.add("new-button");
+	let p = document.createElement("p");
+	p.innerHTML = "+";
+	element.append(p);
+	container.addEventListener('click', () => createNewItem(type));
+	container.append(element);
+	document.querySelector('#'+category).append(container);
+}
+
+function createNewItem (type) {
+	console.log("Create new", type);
 }
 
 // Add phrases of type given in phraseTypes (an array of phrase types),
 // into HTML element with given category id. Optionally sort them by given field.
-function addPhrasesToCategory (phraseTypes, category, sortBy='id') {
+function addPhrasesToCategory (phraseTypes, category, sortBy='text') {
 	let phrases = DataWrangler.getPhrasesByTypes(phraseTypes, sortBy);
 	phrases.forEach ( (phrase) => {
 		addPhraseToLibrary (phrase, category);

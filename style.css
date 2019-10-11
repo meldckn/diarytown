@@ -44,6 +44,7 @@ body {			background-color: var(--bkgd); }
 .phrase.self			{ background: var(--softblue); }
 .phrase.social 			{ background: rgba(255,105,180,1); }
 .phrase.work			{ background: var(--mint); }
+.new-button				{ background: transparent; }
 
 /*
 .phrase:hover 			{ background: rgba(180,180,255,.5); }
@@ -211,6 +212,16 @@ body {
 	min-width: .3rem;
 	font-size: 1rem;
 }
+.phrase.new-button { 
+	box-shadow: none;
+	font-size: 1.6rem;
+	font-weight: lighter;
+	padding: 0;
+	cursor: pointer;
+}
+.phrase-container-new {
+	cursor: pointer;
+}
 
 /* Right-pointing arrow after modifiers 
    by setting the backgrounds of three borders to transparent */
@@ -304,6 +315,7 @@ body {
 	/* Top two categories share a row */
 	.category.small-category { 
 		flex: 1; /* instead of 100% flex-basis, equally share one row */
+		min-width: 40%;
 		border-bottom: lavender;
 	    border-bottom-width: 1px;
 	    border-bottom-style: solid;

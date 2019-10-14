@@ -10,6 +10,9 @@
 	--blue: rgb(61,5,227);
 	--column-offset: 60px;
 	--card-width: 230px;
+
+	--person: rgba(180,180,255,1);
+	--place: rgb(224, 190, 255);
 }
 
 /* Colors */
@@ -17,7 +20,6 @@ body {			background-color: var(--bkgd); }
 .diary-page { 	background: white; /* papayawhip, seashell, or snow when on white, or floralwhite or cornsilk on lavendar*/ 
 				border-color: var(--bkgd); }
 .half-page-left { background: white; }
-.diary-phrase { background: lavender; } /* transition: .5s ease-out all;} */
 .diary-phrase.highlight { background: #ceceff; }
 .dragGhost { 
 	border-color: gold !;
@@ -44,6 +46,8 @@ body {			background-color: var(--bkgd); }
 .phrase.self			{ background: var(--softblue); }
 .phrase.social 			{ background: rgba(255,105,180,1); }
 .phrase.work			{ background: var(--mint); }
+.phrase.person 			{ background: var(--person); }
+.phrase.place 			{ background: var(--place); }
 .new-button				{ background: transparent; }
 
 /*
@@ -212,6 +216,15 @@ body {
 	min-width: .3rem;
 	font-size: 1rem;
 }
+.header-icon {
+	padding-right: 10px;
+}
+.fa-child {
+	color: var(--person);
+}
+.fa-map-marker {
+	color: var(--place);
+}
 .phrase.new-button { 
 	box-shadow: none;
 	font-size: 1.6rem;
@@ -297,8 +310,7 @@ body {
 	flex-basis: 100%;
 	line-height: 0;
 	overflow: auto;
-	padding:4px;
-	padding-bottom: 10px;
+	padding: 10px 4px;
 }
 .category h2 {
 	font-size: small;
@@ -309,20 +321,23 @@ body {
     margin-bottom: 1rem;
     width: 100%;
 }
+.category:first-child {
+	padding-top: 0;
+}
 
 /* Library categories size/layout adjustment for medium+ screens */
 @media all and (min-width: 900px) {
-	/* Top two categories share a row */
+	/* Two small categories share a row */
 	.category.small-category { 
 		flex: 1; /* instead of 100% flex-basis, equally share one row */
 		min-width: 40%;
-		border-bottom: lavender;
+		border-bottom: var(--bkgd);
 	    border-bottom-width: 1px;
 	    border-bottom-style: solid;
 	    padding-bottom: 15px;
 	}
 	.small-category:nth-child(odd) { 
-		border-right: lavender;
+		border-right: var(--bkgd);
 	    border-right-width: 1px;
 	    border-right-style: solid;
 	    padding-right: 15px;
@@ -330,8 +345,9 @@ body {
 	.small-category:nth-child(even) { 
 	    padding-left: 15px;
 	}
-	#events { 
-		padding-top: 10px;
+	/* First and second categories (top row) */
+	.category:nth-child(-n+2) {
+		padding-top: 0;
 	}
 }
 

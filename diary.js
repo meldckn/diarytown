@@ -350,12 +350,12 @@ function makeInnerSlot (type) {
 			//<i class="fas fa-child empty-indicator"></i>
 			emptyIndicator = document.createElement("i");
 			emptyIndicator.className = "fas fa-child empty-indicator"; // or fa-user
-			emptyIndicator.style.color = "white";
+			emptyIndicator.style.color = "var(--person)";
 			break;
 		case "place":
 			emptyIndicator = document.createElement("i");
 			emptyIndicator.className = "fas fa-map-marker empty-indicator"; // or fa-home
-			emptyIndicator.style.color = "white";
+			emptyIndicator.style.color = "var(--place)";
 			break;
 		default: 
 			emptyIndicator = document.createElement("div");

@@ -28,6 +28,10 @@ function insertAfter(afterNode, beforeNode) {
     beforeNode.parentNode.insertBefore(afterNode, beforeNode.nextSibling);
 }
 
+function isHtmlElement(element) {
+    return element instanceof Element || element instanceof HTMLDocument;  
+}
+
 ///
 
 /// Sortable library stuff
@@ -65,6 +69,8 @@ let innerSortableObject = {
 		evt.to.querySelector(':scope > .empty-indicator').style.display = "none";
 		// TODO slightly darken the inner slot's parent color for the inner slot background 
 		evt.to.style.background = "#00a6de"; 
+		addSubject(evt.item);
+		//transformCompoundPhrase(evt.to);
 	},
 	// Element is removed from the list into another list
 	onRemove: function (evt) {
@@ -137,17 +143,67 @@ Sortable.create( diary, {
 	sort: true,
 	onAdd: function (evt) {
 		// When a phrase is dropped into the diary
-		// Make each nested inner slot Sortable
-		let innerSlots = Array.from(evt.item.querySelectorAll('.inner-slot'));
-		innerSlots.forEach( (innerSlot) => {
-			Sortable.create(innerSlot, innerSortableObject);
-		});
-
+		addToDiary (evt.item);
 	},
 	// Called by any change to the list (add / update / remove)
 	onSort: function (evt) {
 	},
 });
+
+// Add a given phrase/action/event (by id) to the diary entry
+// -- uses the event which triggered it (a phrase's onclick)
+// TODO check that there is a valid phrase in the event target
+// (i.e., that this was called from a phrase's onclick)
+// TODO if it wasn't, it would probably be called with a phrase id
+// so have that as fallback?
+function addToDiary (newPhrase) {
+
+	if (!isHtmlElement(newPhrase)) {
+		// Was not called with a valid HTML element (of the new phrase)
+		// So create one using the current event's target 
+
+		// Deeply clone the phrase container that was clicked on (w/ all children)
+		// (doesn't clone event listeners)
+		newPhrase = event.currentTarget.cloneNode(true);
+
+		// TODO See if we can simulate a drag-to-diary action here?
+
+		document.querySelector('#diary').append(newPhrase);
+	}
+
+	// Make each nested inner slot Sortable
+	let innerSlots = Array.from(newPhrase.querySelectorAll('.inner-slot'));
+	innerSlots.forEach( (innerSlot) => {
+		Sortable.create(innerSlot, innerSortableObject);
+	});
+
+	// Add subject if phrase doesn't already have one
+	addSubject(newPhrase);
+
+	// TODO Fix animation here?
+	//newPhrase.classList.add("dragged");
+	//setTimeout(newPhrase.classList.remove("dragged"), 5000);
+}
+
+// Add a subject to the given phrase (HTML element) if it's appropriate 
+// (if it's a verb and doesn't already have a subject)
+function addSubject (phrase) {
+	let phraseData = DataWrangler.getPhraseById(phrase.id);
+	console.log(phrase);
+
+	if (!hasSubject(phrase)) {
+		innerText = phrase.querySelector(".phrase > p");
+		innerText.prepend("I ");
+	}
+}
+
+function hasSubject (phrase) {
+	if (phrase.querySelector(".phrase > p").innerText.startsWith("I"))
+		return true;
+	if (phrase.querySelector(".phrase > :first-child").classList.contains("person"))
+		return true;
+	return false;
+}
 
 // A pseudo-list to enable drag-and-dropping from diary to trash
 // TODO trigger a trash effect when hovered over while dragging 
@@ -335,7 +391,7 @@ function addPhraseToLibrary (phraseObj, category) {
 // Make and return an inner slot element
 function makeInnerSlot (type) {
 	let innerSlot = document.createElement("button");
-	innerSlot.className = "inner-slot";
+	innerSlot.classList.add("inner-slot");
 	// TODO set inner slot background color to slightly darker shade of parent's background
 	//innerSlot.style.background = 'white';
 	let emptyIndicator = document.createElement("div");
@@ -351,11 +407,13 @@ function makeInnerSlot (type) {
 			emptyIndicator = document.createElement("i");
 			emptyIndicator.className = "fas fa-child empty-indicator"; // or fa-user
 			emptyIndicator.style.color = "var(--person)";
+			innerSlot.classList.add("person");
 			break;
 		case "place":
 			emptyIndicator = document.createElement("i");
 			emptyIndicator.className = "fas fa-map-marker empty-indicator"; // or fa-home
 			emptyIndicator.style.color = "var(--place)";
+			innerSlot.classList.add("place");
 			break;
 		default: 
 			emptyIndicator = document.createElement("div");
@@ -428,34 +486,6 @@ function dropInDiary (event) {
 	removeClassOn("highlight", "diary-phrase");
 	draggedPhrase.classList.remove("dragged");
 	draggedPhrase = null;
-}
-
-// Add a given phrase/action/event (by id) to the diary entry
-// -- uses the event which triggered it (a phrase's onclick)
-// TODO check that there is a valid phrase in the event target
-// (i.e., that this was called from a phrase's onclick)
-// TODO if it wasn't, it would probably be called with a phrase id
-// so have that as fallback?
-function addToDiary () {
-	// Deeply clone the phrase container that was clicked on (w/ all children)
-	// (doesn't clone event listeners)
-	let newPhrase = event.currentTarget.cloneNode(true);
-
-	// TODO See if we can simulate a drag-to-diary action here
-
-	document.querySelector('#diary').append(newPhrase);
-	//createPhraseBuddies(newPhrase);
-
-	// Loop through each nested sortable element (inner-slots)
-	let innerSlots = Array.from(newPhrase.querySelectorAll('.inner-slot'));
-
-	for (var i = 0; i < innerSlots.length; i++) {
-		Sortable.create ( innerSlots[i], innerSortableObject);
-	}
-
-	// TODO Fix animation here?
-	newPhrase.classList.add("dragged");
-	setTimeout(newPhrase.classList.remove("dragged"), 5000);
 }
 
 // Sets SVG attributes given in obj for a new line

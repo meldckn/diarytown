@@ -716,7 +716,7 @@ var phrases = [
 	},{
 		id : "fight",
 		text : [ "#someone and #someone fought", "#someone and #someone got into a fight" ],
-		type : "action",
+		type : "event",
 		category : "social",
 		otherCategories : "",
 		sentiment: "negative",

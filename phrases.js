@@ -1047,7 +1047,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "event",
 		afterContext : "event",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "caused",
 		text : [ "#event which caused #event" ],
@@ -1057,7 +1058,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "event",
 		afterContext : "event",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "led-to",
 		text : [ "#event which led to #event" ],
@@ -1067,7 +1069,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "event",
 		afterContext : "event",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "while",
 		text : [ "#event while #event" ],
@@ -1077,7 +1080,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "event",
 		afterContext : "event",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "which-involved",
 		text : [ "#event which involved #event" ],
@@ -1087,7 +1091,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "event",
 		afterContext : "event",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "because",
 		text : [ "#event because #event", "#event because I'm #adj" ],
@@ -1097,7 +1102,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "event",
 		afterContext : "event",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "to",
 		text : [ "#event to #event" ],
@@ -1107,7 +1113,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "event",
 		afterContext : "event",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "but",
 		text : [ "#event but #event" ],
@@ -1117,7 +1124,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "event",
 		afterContext : "event",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "by",
 		text : [ "#event by #event" ],
@@ -1127,7 +1135,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "event",
 		afterContext : "event",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "instead-of",
 		text : [ "#event instead of #event" ],
@@ -1137,7 +1146,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "event",
 		afterContext : "event",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "at",
 		text : [ "#event at #place" ],
@@ -1147,7 +1157,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "event",
 		afterContext : "place",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "near",
 		text : [ "#event near #place" ],
@@ -1157,7 +1168,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "event",
 		afterContext : "place",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "on-the-way-to",
 		text : [ "#action on the way to #place" ],
@@ -1167,7 +1179,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "event",
 		afterContext : "place",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "with",
 		text : [ "#action with #someone" ],
@@ -1177,7 +1190,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "action",
 		afterContext : "character",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "for",
 		text : [ "#action for #someone" ],
@@ -1187,7 +1201,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "action",
 		afterContext : "character",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "someone-was-adj",
 		text : [ "#someone was #adj" ],
@@ -1313,7 +1328,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "event",
 		afterContext : "",
-		flippable : false
+		flippable : false,
+		supressSubject: true
 	},{
 		id : "as-usual",
 		text : [ "#action, as usual", "as usual, #action" ],
@@ -1323,7 +1339,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "",
 		afterContext : "action",
-		flippable : true
+		flippable : true,
+		supressSubject: true
 	},{
 		id : "again",
 		text : [ "#event again" ],
@@ -1333,7 +1350,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "",
 		afterContext : "action",
-		flippable : true
+		flippable : true,
+		supressSubject: true
 	},{
 		id : "didnt",
 		text : [ "didn't #action" ],
@@ -1343,7 +1361,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "",
 		afterContext : "action",
-		flippable : false
+		flippable : false,
+		supressSubject: false
 	},{
 		id : "accidentally",
 		text : [ "accidentally #action" ],
@@ -1353,7 +1372,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "",
 		afterContext : "action",
-		flippable : false
+		flippable : false,
+		supressSubject: false
 	},{
 		id : "just",
 		text : [ "just #action" ],
@@ -1363,7 +1383,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "",
 		afterContext : "action",
-		flippable : false
+		flippable : false,
+		supressSubject: false
 	},{
 		id : "finally",
 		text : [ "finally #event", "#event, finally" ],
@@ -1373,7 +1394,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "",
 		afterContext : "event",
-		flippable : true
+		flippable : true,
+		supressSubject: true
 	},{
 		id : "tried",
 		text : [ "tried to #action", "tried to #action but didn't" ],
@@ -1383,7 +1405,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "",
 		afterContext : "action",
-		flippable : false
+		flippable : false,
+		supressSubject: false
 	},{
 		id : "wanted",
 		text : [ "wanted to #action", "wanted to #action but didn't" ],
@@ -1393,7 +1416,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "",
 		afterContext : "action",
-		flippable : false
+		flippable : false,
+		supressSubject: false
 	},{
 		id : "needed",
 		text : [ "needed to #action", "needed to #action but didn't" ],
@@ -1403,7 +1427,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "",
 		afterContext : "action",
-		flippable : false
+		flippable : false,
+		supressSubject: false
 	},{
 		id : "want",
 		text : [ "want to #action" ],
@@ -1413,7 +1438,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "",
 		afterContext : "action",
-		flippable : false
+		flippable : false,
+		supressSubject: false
 	},{
 		id : "need",
 		text : [ "need to #action" ],
@@ -1423,7 +1449,8 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "",
 		afterContext : "action",
-		flippable : false
+		flippable : false,
+		supressSubject: false
 	},{
 		id : "planned",
 		text : [ "planned to #action", "planned to #action but didn't" ],
@@ -1433,6 +1460,7 @@ var phrases = [
 		relatedPhrases : [],
 		beforeContext : "",
 		afterContext : "action",
-		flippable : false
+		flippable : false,
+		supressSubject: false
 	}
 ];

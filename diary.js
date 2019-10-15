@@ -70,7 +70,7 @@ let innerSortableObject = {
 		// TODO slightly darken the inner slot's parent color for the inner slot background 
 		evt.to.style.background = "#00a6de"; 
 		addSubject(evt.item);
-		//transformCompoundPhrase(evt.to);
+		transformCompoundPhrase(evt.to.parentElement);
 	},
 	// Element is removed from the list into another list
 	onRemove: function (evt) {
@@ -82,6 +82,10 @@ let innerSortableObject = {
 		}
 	}
 };
+
+function transformCompoundPhrase (outerPhrase) {
+	console.log(outerPhrase);
+}
 
 // TODO play a lookatme effect on diary page when library phrase picked up?
 // (if not right away, could trigger after some amount of time while picked up?)
@@ -189,8 +193,11 @@ function addToDiary (newPhrase) {
 // (if it's a verb and doesn't already have a subject)
 function addSubject (phrase) {
 	let phraseData = DataWrangler.getPhraseById(phrase.id);
-	console.log(phrase);
+	// People and places (as simple phrases) are not added to the Loki db
+	if (!phraseData) return;
 
+	if (phraseData.supressSubject) return; 
+	
 	if (!hasSubject(phrase)) {
 		innerText = phrase.querySelector(".phrase > p");
 		innerText.prepend("I ");

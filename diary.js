@@ -244,6 +244,12 @@ function toPresentParticiple (phraseElement) {
 }
 
 function conjugatePhraseElement(phraseElement, tense) {
+	// People and places (as simple phrases) should never be conjugated
+	// TODO change this to more straightforward check once we have overall database
+	// e.g., if (isSimplePhrase(phraseElement.id)) return;
+	let phraseData = DataWrangler.getPhraseById(phraseElement.id);
+	if (!phraseData) return;
+
 	let phraseText = phraseElement.querySelector('.phrase-container p').innerText;
 	let verb = getVerb(phraseText);
 	let present = conjugateVerb(verb,tense);

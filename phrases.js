@@ -238,6 +238,20 @@ var phrases = [
 		afterContext : "",
 		emoji : "🏥"
 	},{
+		id : "prayed",
+		text : [ "prayed" ],
+		type : "action",
+		category : "spirituality",
+		otherCategories : "",
+		relatedPhrases : ["church"]
+	},{
+		id : "church",
+		text : [ "went to church" ],
+		type : "action",
+		category : "spirituality",
+		otherCategories : "",
+		relatedPhrases : ["prayed"]
+	},{
 		id : "avoided",
 		text : [ "avoided doing something", "avoided #action", "avoided a responsibility" ],
 		type : "action",

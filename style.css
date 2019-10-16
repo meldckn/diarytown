@@ -231,6 +231,7 @@ body {
 	font-weight: lighter;
 	padding: 0;
 	cursor: pointer;
+	font-family: 'Helvetica Neue';
 }
 .phrase-container-new {
 	cursor: pointer;
@@ -385,6 +386,8 @@ button {
 	border: none;
 	outline: none; /* Prevent weird blue highlight for buttons */
 	/*opacity: 1;*/
+	font-family: 'Helvetica';
+    font-weight: 100;
 }
 button:not(.phrase):hover {
 	opacity: .5;

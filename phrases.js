@@ -1,5 +1,4 @@
 
-
 var people = [ 
 	{
 		name: "Melanie",
@@ -1351,6 +1350,28 @@ var phrases = [
 		beforeContext : "",
 		afterContext : "action",
 		flippable : true,
+		supressSubject: true
+	},{
+		id : "little",
+		text : [ "#event a little" ],
+		type : "modifier",
+		category : "modifier",
+		otherCategories : "",
+		relatedPhrases : [],
+		beforeContext : "",
+		afterContext : "action",
+		flippable : false,
+		supressSubject: true
+	},{
+		id : "lot",
+		text : [ "#event a lot" ],
+		type : "modifier",
+		category : "modifier",
+		otherCategories : "",
+		relatedPhrases : [],
+		beforeContext : "",
+		afterContext : "action",
+		flippable : false,
 		supressSubject: true
 	},{
 		id : "didnt",

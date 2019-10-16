@@ -5,6 +5,7 @@ function random(min, max) {
 	return Math.random() * (max - min) + min;
 }
 
+// Add .last property to the Array prototype
 if (!Array.prototype.last){
     Array.prototype.last = function(){
         return this[this.length - 1];
@@ -32,7 +33,53 @@ function isHtmlElement(element) {
     return element instanceof Element || element instanceof HTMLDocument;  
 }
 
+// Zip an arbitrary number of arrays: [[a1, b1], [a2, b2], ...]
+function zip (firstArray) {
+	return zipped = firstArray.map((firstArrayItem, itemIndex) => { 
+		let innerArray = [firstArrayItem];
+		for (let argIndex=1; argIndex<arguments.length; argIndex++) {
+			innerArray.push(arguments[argIndex][itemIndex]);
+		}
+		return innerArray;
+	});
+}
+
+// Return a copy of a given array without any duplicate or undefined elements
+function removeDuplicates (array) {
+	return array.filter( (item, index) => 
+		array.indexOf(item) === index && item !== undefined );
+}
+
 ///
+
+DataWrangler.init();
+
+// Need to custom-add some words to the lexicon because the 
+// default Rita lexicon thinks they're nouns when they're actually verbs
+RiTa.addWord("meditated","m-eh1-d-ah0-t-ey2-t-eh-d","vbd");
+RiTa.addWord("gossiped", "g-aa1-s-ah0-p-eh-d", "vbd");
+
+// Custom plugin for NLP-compromise to force particular verb conjugations
+const plugin = {
+	conjugations: {
+	    'avoid': 	 { Infinitive:'avoid', PastTense:'avoided'},
+	    'chat': 	 { Infinitive:'chat', PastTense:'chatted', Gerund:'chatting'},
+	    'daydream':  { Infinitive:'daydream', PastTense:'daydreamed'},
+	    //'didn\'t':   { Infinitive:'not do', PastTense:'didn\'t', Gerund:'not doing'},
+	    'gossip': 	 { Infinitive:'gossip', PastTense:'gossiped', Gerund:'gossiping'},
+	    'help': 	 { Infinitive:'help', PastTense:'helped'},
+	    'indulge':   { Infinitive:'indulge', PastTense:'indulged', Gerund:'indulging'},
+	    'learn': 	 { Infinitive:'learn', PastTense:'learned'},
+	    'mess': 	 { Infinitive:'mess', PastTense:'messed', Gerund:'messing'},
+	    'need': 	 { Infinitive:'need', PastTense:'needed'},
+	    'plan': 	 { Infinitive:'plan', PastTense:'planned', Gerund:'planning'},
+	    'reminisce': { Infinitive:'reminisce', PastTense:'reminisced', Gerund:'reminiscing'},
+	    'storm': 	 { Infinitive:'storm', PastTense:'stormed', Gerund:'storming'},
+	    'treat': 	 { Infinitive:'treat', PastTense:'treated'},
+	    'visit': 	 { Infinitive:'visit', PastTense:'visited'}
+	}
+};
+nlp.plugin(plugin);
 
 /// Sortable library stuff
 
@@ -69,8 +116,7 @@ let innerSortableObject = {
 		evt.to.querySelector(':scope > .empty-indicator').style.display = "none";
 		// TODO slightly darken the inner slot's parent color for the inner slot background 
 		evt.to.style.background = "#00a6de"; 
-		addSubject(evt.item);
-		transformCompoundPhrase(evt.to.parentElement);
+		transformCompoundPhrase(evt.to.parentElement.parentElement, evt.item);
 	},
 	// Element is removed from the list into another list
 	onRemove: function (evt) {
@@ -83,8 +129,125 @@ let innerSortableObject = {
 	}
 };
 
-function transformCompoundPhrase (outerPhrase) {
-	console.log(outerPhrase);
+function transformCompoundPhrase (outerPhrase, newPhrase) {
+	let slot = getSlotNumber(newPhrase);
+	switch (outerPhrase.id) {
+		case 'to':
+			// Change 2nd to present (..to daydreamed -> ..to daydream)
+			if (slot == 0) {
+				addSubject(newPhrase);
+				toPast(newPhrase);
+			} else if (slot == 2) {
+				stripI(newPhrase)
+				toPresent(newPhrase);
+			}  
+			break;
+		case 'by':
+		case 'which-involved':
+		case 'led-to':
+		case 'instead-of':
+			// Change 2nd to -ing and remove subject
+			if (slot == 0) {
+				addSubject(newPhrase);
+				toPast(newPhrase);
+			} else if (slot == 2) {
+				stripI(newPhrase);
+				toPresentParticiple(newPhrase);
+			}
+			break;
+		case 'didnt':
+		case 'tried':
+		case 'want':
+		case 'wanted':
+		case 'need':
+		case 'needed':
+		case 'planned':
+			stripI(newPhrase);
+			toPresent(newPhrase);
+			break;
+		case 'then':
+			// TODO strip second subject if same as first
+		case 'because':
+		case 'while': 
+			addSubject(newPhrase);
+			toPast(newPhrase);
+			break;
+		case 'which-caused':
+			//after event changes to present tense and prefix "#subject to" 
+			//(if action: change to present tense and prefix with "me to")
+			break;
+	}
+}
+
+// Return the index of the inner slot that newPhrase is in 
+// relative to its immediate outer phrase (usually 0 or 2)
+function getSlotNumber (newPhrase) {
+	// Get the index of the newPhrase's parent (inner slot) in its parent
+	let innerSlot = newPhrase.parentElement;
+	return [...innerSlot.parentElement.children].indexOf(innerSlot);	
+}
+
+// Reset phrase to how it should be when added to the root level of the diary
+function undoPhraseTransforms (phraseElement) {
+	addSubject(phraseElement);
+	toPast(phraseElement);
+}
+
+// If there's an "I " at the beginning of this phrase's innerText, remove it
+// TODO find the probable bug
+function stripI (phraseElement) {
+	let phraseText = phraseElement.querySelector('.phrase-container p').innerText;
+	phraseElement.querySelector('.phrase-container p').innerText = phraseText.replace("I ", "");
+}
+
+// Use RiTa to find the first verb in the given phrase (string, not element)
+// Since that's probably the main verb and the only thing we need to change the tense of
+function getVerb (phrase) {
+	let words = RiTa.tokenize(phrase);
+	let pos = RiTa.getPosTags(phrase, true);
+	let firstVerb = words.find( (word,i) => {
+		return pos[i] === "v";
+	});
+	return firstVerb;
+}
+
+// Return the given verb conjugated to the given tense
+// Possible tenses are defined by NLP-compromise:
+// "Infinitive", "Gerund", "PresentTense", "PastTense", "FutureTense", "Actor"
+function conjugateVerb (verb, tense) {
+	word = nlp(verb);
+	conjugation = word.verbs().conjugate()[0];
+	if (conjugation !== undefined)
+		return conjugation[tense];
+}
+
+// Return an array of all unique single-word verbs used in the phrases library
+// Mostly for debugging
+// Currently only looks through the default text[0] of each phrase
+// TODO also look through alt text?
+function getAllVerbs () {
+	let verbs = DataWrangler.getAllPhrases().map((phrase) => {
+		return getVerb(phrase.text[0]); 
+	});
+	return removeDuplicates(verbs);
+}
+
+// Convert the text in a given phrase element to present (infinitive) tense
+function toPresent (phraseElement) {
+	conjugatePhraseElement(phraseElement, 'Infinitive');
+}
+function toPast (phraseElement) {
+	conjugatePhraseElement(phraseElement, 'PastTense');
+}
+function toPresentParticiple (phraseElement) {
+	conjugatePhraseElement(phraseElement, 'Gerund');
+}
+
+function conjugatePhraseElement(phraseElement, tense) {
+	let phraseText = phraseElement.querySelector('.phrase-container p').innerText;
+	let verb = getVerb(phraseText);
+	let present = conjugateVerb(verb,tense);
+	phraseElement.querySelector('.phrase-container p').innerText = phraseText.replace(verb,present);
 }
 
 // TODO play a lookatme effect on diary page when library phrase picked up?
@@ -148,6 +311,7 @@ Sortable.create( diary, {
 	onAdd: function (evt) {
 		// When a phrase is dropped into the diary
 		addToDiary (evt.item);
+		undoPhraseTransforms(evt.item);
 	},
 	// Called by any change to the list (add / update / remove)
 	onSort: function (evt) {
@@ -196,8 +360,9 @@ function addSubject (phrase) {
 	// People and places (as simple phrases) are not added to the Loki db
 	if (!phraseData) return;
 
+	// Some connectors & modifiers don't have subjects and shouldn't have ones generated 
 	if (phraseData.supressSubject) return; 
-	
+
 	if (!hasSubject(phrase)) {
 		innerText = phrase.querySelector(".phrase > p");
 		innerText.prepend("I ");
@@ -247,7 +412,6 @@ function dragOverTrash (ev) {
 // (and then option to trash, unselect, and [stretch] move together in sort?)
 
 
-DataWrangler.init();
 makeLibrary();
 
 

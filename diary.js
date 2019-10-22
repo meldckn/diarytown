@@ -232,7 +232,15 @@ function conjugateVerb (verb, tense) {
 	conjugation = word.verbs().conjugate()[0];
 	if (conjugation !== undefined)
 		return conjugation[tense];
+	else {
+		console.warn(`Could not conjugate '${verb}' into ${tense}.`,
+					 `Consider adding verb to NLP-compromise custom plugin.`);
+		return verb; 
+	}
 }
+
+// TODO write a test function that runs on load that tries to conjugate all phrases 
+// in library, and lists all phrases that it doesn't understand
 
 // Return an array of all unique single-word verbs used in the phrases library
 // Mostly for debugging
@@ -266,6 +274,7 @@ function conjugatePhraseElement(phraseElement, tense) {
 	let phraseText = phraseElement.querySelector('.phrase-container p').innerText;
 	let verb = getVerb(phraseText);
 	let present = conjugateVerb(verb,tense);
+
 	phraseElement.querySelector('.phrase-container p').innerText = phraseText.replace(verb,present);
 }
 
@@ -388,11 +397,20 @@ function addSubject (phrase) {
 	}
 }
 
+// TODO refactor code so that each phrase has structured data associated with it so we
+// don't need to do this awful, super fragile HTML parsing
 function hasSubject (phrase) {
 	if (phrase.querySelector(".phrase > p").innerText.startsWith("I"))
 		return true;
 	if (phrase.querySelector(".phrase > :first-child").classList.contains("person"))
 		return true;
+	if (phrase.querySelector(".phrase > :first-child").classList.contains("place"))
+		return true;
+
+	let phraseText = phrase.querySelector(".phrase > :first-child").innerText;
+	let match = nlp(phraseText).match('#Noun * #Verb'); // Does a noun come before a verb
+	if (match.found) return true;
+	
 	return false;
 }
 
@@ -602,7 +620,7 @@ function addPhraseToLibrary (phraseObj, category) {
 	element.className = "phrase " + category;
 
 	// Parse all inner slot #tags and text in between and around them
-	const regex = /(#[a-z]*)|([a-z' ]+)/gim;
+	const regex = /(#[a-z]*)|([a-z' -]+)/gim;
 	let str = phraseObj["text"][0];
 	let matches = str.match(regex);
 

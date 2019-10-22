@@ -33,6 +33,14 @@ var DataWrangler = (function () {
 		return phrases_db.findOne({id: id});
 	}
 
+	function getPhrasesByTag (tag, sortBy='text') {
+		// Use custom sorting function if sorting by default text
+		if (sortBy == 'text') {
+			return phrases_db.chain().find({'tags':{'$contains':tag}}).sort(sortByDefaultText).data();
+		} else 
+			return phrases_db.chain().find({'tags':{'$contains':tag}}).simplesort(sortBy).data();
+	}
+
 	function getPhrasesByType (type, sortBy='text') {
 		if (sortBy == 'text') {
 			return phrases_db.chain().find({'type':type}).sort(sortByDefaultText).data();
@@ -78,6 +86,7 @@ var DataWrangler = (function () {
         init : init,
         getAllPhrases : getAllPhrases, 
         getPhraseById : getPhraseById,
+        getPhrasesByTag : getPhrasesByTag,
         getPhrasesByType : getPhrasesByType,
         getPhrasesByTypes : getPhrasesByTypes,
         getSortedPhrases : getSortedPhrases,

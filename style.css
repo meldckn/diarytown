@@ -1,7 +1,10 @@
 
 /* Variables */
 :root {
-	--bkgd: lavender;
+	--bkgd: cornflowerblue;/*lavender;*/
+	--fade: white;
+	--library-lines: rgb(232, 232, 232);
+
 	--navy: rgb(34,0,127);
 	--pink: rgb(255,96,125);
 	--mint: rgb(127,255,181);
@@ -11,8 +14,8 @@
 	--column-offset: 60px;
 	--card-width: 230px;
 
-	--person: rgba(180,180,255,1);
-	--place: rgb(224, 190, 255);
+	--person: rgb(255, 131, 153);
+	--place: pink; /*rgb(255, 200, 200);*/
 }
 
 /* Colors */
@@ -39,16 +42,25 @@ body {			background-color: var(--bkgd); }
 }
 
 .phrase 				{ background: rgba(180,180,255,1); }
-.phrase.connector		{ background: deepskyblue; }
-.phrase.external		{ background: #93e4ff; }
-.phrase.modifier		{ background: darkturquoise; }
-.phrase.movement 		{ background: aquamarine; }
-.phrase.self			{ background: var(--softblue); }
-.phrase.social 			{ background: rgba(255,105,180,1); }
-.phrase.work			{ background: var(--mint); }
+
 .phrase.person 			{ background: var(--person); }
 .phrase.place 			{ background: var(--place); }
 .new-button				{ background: transparent; }
+
+.phrase.connectors		{ background: darkturquoise; } 
+.phrase.modifiers		{ background: turquoise; }
+
+.phrase.mind			{ background: hsl(229, 91%, 73%); }
+.phrase.body 	 		{ background: hsl(223, 100%, 83%); }
+.phrase.social 			{ background: lightskyblue; }
+.phrase.recreation 		{ background: hsl(195, 100%, 79%); }
+.phrase.expression 		{ background: hsl(195, 100%, 65%); }
+.phrase.work			{ background: hsl(219, 91%, 75%); } 
+.phrase.chores 			{ background: cornflowerblue; }
+.phrase.major-life-events { background: hsl(247, 68%, 55%);
+							color: white; }
+.phrase.external		{ background: hsl(248, 67%, 33%);
+						  color: white; }
 
 /*
 .phrase:hover 			{ background: rgba(180,180,255,.5); }
@@ -128,8 +140,7 @@ body {
     padding: 5%;
     /* Size needs to be defined in terms of viewport (not %), 
     else pseudo elements won't resize correctly on window resize */
-    min-width: 20vw;
-    max-width: 35vw;
+    width: 30vw;
     height: 60vh;
 }
 /* All contents of diary pages should be on top */
@@ -144,7 +155,7 @@ body {
     font-style: italic;
     font-family: serif;
     letter-spacing: .2rem;
-    color: grey;
+    color: var(--fade);
     background: transparent;
 }
 #diary {
@@ -171,7 +182,7 @@ body {
 	margin-bottom: 10px;
 }
 #trash {
-    color: gray;
+    color: var(--fade);
     background: transparent;
     font-size: 1rem;
     position: absolute;
@@ -351,13 +362,13 @@ body {
 	.category.small-category { 
 		flex: 1; /* instead of 100% flex-basis, equally share one row */
 		min-width: 40%;
-		border-bottom: var(--bkgd);
+		border-bottom: var(--library-lines);
 	    border-bottom-width: 1px;
 	    border-bottom-style: solid;
 	    padding-bottom: 15px;
 	}
 	.small-category:nth-child(odd) { 
-		border-right: var(--bkgd);
+		border-right: var(--library-lines);
 	    border-right-width: 1px;
 	    border-right-style: solid;
 	    padding-right: 15px;

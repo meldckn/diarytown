@@ -6,10 +6,21 @@ function random(min, max) {
 }
 
 // Add .last property to the Array prototype
-if (!Array.prototype.last){
-    Array.prototype.last = function(){
+if (!Array.prototype.last) {
+    Array.prototype.last = function() {
         return this[this.length - 1];
     };
+};
+
+if (!String.prototype.toTitleCase) {
+	String.prototype.toTitleCase = function() {
+		return this.replace(
+            /\b\w+/g,
+            function(txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            }
+        );
+	};
 };
 
 // Remove the class given by the first param from all elements selected by second param
@@ -82,6 +93,8 @@ const plugin = {
 nlp.plugin(plugin);
 
 /// Sortable library stuff
+
+makeLibrary();
 
 let diary = document.getElementById('diary');
 let library = document.querySelector('.library'); // Might eventually be multiple lists
@@ -418,9 +431,6 @@ function dragOverTrash (ev) {
 // (and then option to trash, unselect, and [stretch] move together in sort?)
 
 
-makeLibrary();
-
-
 /// Date stuff
 
 function nthMonth (i) {
@@ -457,14 +467,28 @@ document.querySelector('#clear-diary').onclick = function () {
 
 // Display and add listeners to each phrase in the library
 function makeLibrary () {
-	// TODO sort phrases in each category by something reasonable
-	addPhrasesToCategory (['modifier'], 'modifiers');
-	addPhrasesToCategory (['connector'], 'connectors');
-	addPhrasesToCategory (['event','action'], 'events', 'text');
+
+	// Add simple phrases (no inner phrases)
 	addItemsToCategory (people, 'people', 'person');
 	appendPlusButton ('people', 'person');
 	addItemsToCategory (places, 'places', 'place');
 	appendPlusButton ('places', 'place');
+
+	// Add complex phrases by type
+	addPhrasesOfTypeToCategory (['modifier'], 'modifiers');
+	addPhrasesOfTypeToCategory (['connector'], 'connectors');
+
+	// Add complex event/action phrases by tag
+	makeCategory ('Mind', 'mind'); 
+	makeCategory ('Body', 'body');
+	makeCategory ('Social', 'social');
+	makeCategory ('Recreation', 'recreation');
+	makeCategory ('Expression', 'expression');
+	makeCategory ('Work', 'work'); 
+	makeCategory ('Chores', 'chores');
+	makeCategory ('Major Life Events', 'major life events'); 
+	makeCategory ('External', 'external');
+	
 }
 
 // Add all phrases defined by data objects in the items array 
@@ -518,12 +542,48 @@ function appendPlusButton (category, type) {
 }
 
 function createNewItem (type) {
+	// TODO make this actually do something
 	console.log("Create new", type);
 }
 
+// Make a new category HTML element with the given ID and heading
+// and the classes "category phrases-container library".
+// Like <div class="category phrases-container library" id="events"><h2>Events</h2>.
+// Append all phrases of the given tag to this div.
+function makeCategory (categoryName, phrasesTag) {
+
+	let category = document.createElement("div");
+	category.classList.add("category");
+	category.classList.add("phrases-container");
+	category.classList.add("library");
+	// To turn the categoryName string into a CSS id, make it all lowercase and replace spaces with hyphens
+	category.id = categoryName.toLowerCase().replace(/\s/g, "-");
+
+	let heading = document.createElement("h2");
+	heading.innerHTML = categoryName.toTitleCase();
+	category.append(heading);
+
+	document.querySelector('.categories-container').append(category);
+
+	addPhrasesWithTagToCategory (phrasesTag, category.id);
+}
+
+//// TODO: make the two functions addPhrasesOfTypeToCategory and addPhrasesWithTagToCategory one function?
+
+// Add phrases with a given tag to HTML element with given category id. Optionally sort them by given field.
+// Assumes there's something like <div class="category phrases-container library" id="events"><h2>Events</h2>
+// in the HTML.
+function addPhrasesWithTagToCategory (phraseTag, category, sortBy='text') {
+	let phrases = DataWrangler.getPhrasesByTag(phraseTag, sortBy);
+	phrases.forEach ( (phrase) => {
+		addPhraseToLibrary (phrase, category);
+	})
+}
 // Add phrases of type given in phraseTypes (an array of phrase types),
 // into HTML element with given category id. Optionally sort them by given field.
-function addPhrasesToCategory (phraseTypes, category, sortBy='text') {
+// Assumes there's something like <div class="category phrases-container library" id="events"><h2>Events</h2>
+// in the HTML.
+function addPhrasesOfTypeToCategory (phraseTypes, category, sortBy='text') {
 	let phrases = DataWrangler.getPhrasesByTypes(phraseTypes, sortBy);
 	phrases.forEach ( (phrase) => {
 		addPhraseToLibrary (phrase, category);
@@ -534,12 +594,12 @@ function addPhrasesToCategory (phraseTypes, category, sortBy='text') {
 // and append it to the element with the given category id
 function addPhraseToLibrary (phraseObj, category) {
 	let container = document.createElement("div");
-	container.classList.add("phrase-container-"+phraseObj["category"]);
+	container.classList.add("phrase-container-"+category);
 	container.classList.add("phrase-container");
 	container.id = phraseObj["id"];
 	container.draggable = true;
 	let element = document.createElement("button");
-	element.className = "phrase " + phraseObj["category"];
+	element.className = "phrase " + category;
 
 	// Parse all inner slot #tags and text in between and around them
 	const regex = /(#[a-z]*)|([a-z' ]+)/gim;

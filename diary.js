@@ -189,6 +189,10 @@ function transformCompoundPhrase (outerPhrase, newPhrase) {
 			//after event changes to present tense and prefix "#subject to" 
 			//(if action: change to present tense and prefix with "me to")
 			break;
+		default: 
+			if (slot == 0)
+				addSubject(newPhrase);
+			break;
 	}
 }
 
@@ -270,6 +274,7 @@ function conjugatePhraseElement(phraseElement, tense) {
 	// e.g., if (isSimplePhrase(phraseElement.id)) return;
 	let phraseData = DataWrangler.getPhraseById(phraseElement.id);
 	if (!phraseData) return;
+	if (phraseData.type === "connector" || phraseData.type === "modifier") return;
 
 	let phraseText = phraseElement.querySelector('.phrase-container p').innerText;
 	let verb = getVerb(phraseText);
@@ -408,8 +413,11 @@ function hasSubject (phrase) {
 		return true;
 
 	let phraseText = phrase.querySelector(".phrase > :first-child").innerText;
-	let match = nlp(phraseText).match('#Noun * #Verb'); // Does a noun come before a verb
-	if (match.found) return true;
+	let startsWithVerb = nlp(phraseText).match("^#Verb").found; // Does phrase start with a verb
+	if (startsWithVerb) return false;
+
+	let nounThenVerb = nlp(phraseText).match('#Noun * #Verb').found; // Does a noun come before a verb
+	if (match) return true;
 	
 	return false;
 }
@@ -620,7 +628,7 @@ function addPhraseToLibrary (phraseObj, category) {
 	element.className = "phrase " + category;
 
 	// Parse all inner slot #tags and text in between and around them
-	const regex = /(#[a-z]*)|([a-z' -]+)/gim;
+	const regex = /(#[a-z-]*)|([a-z' -]+)/gim;
 	let str = phraseObj["text"][0];
 	let matches = str.match(regex);
 

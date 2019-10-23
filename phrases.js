@@ -693,14 +693,21 @@ var phrases = [
 		type : "action",
 		tags: ["major life events"],
 		sentiment: "positive",
-		relatedPhrases : ["married"]
+		relatedPhrases : ["proposed", "married"]
 	},{
-		id : "married",
-		text : [ "got married to #someone" ],
+		id : "proposed",
+		text : [ "proposed to #someone" ],
 		type : "action",
 		tags: ["major life events"],
 		sentiment: "positive",
-		relatedPhrases : ["engaged"]
+		relatedPhrases : ["engaged", "married"]
+	},{
+		id : "married",
+		text : [ "married #someone", "got married to #someone" ],
+		type : "action",
+		tags: ["major life events"],
+		sentiment: "positive",
+		relatedPhrases : ["engaged", "proposed"]
 	},{
 		id : "divorced",
 		text : [ "got divorced" ],
@@ -1461,7 +1468,7 @@ var phrases = [
 		supressSubject: true
 	},{
 		id : "to",
-		text : [ "#event to #event" ],
+		text : [ "#event in order to #event", "#event to #event" ],
 		type : "connector",
 		relatedPhrases : [],
 		supressSubject: true

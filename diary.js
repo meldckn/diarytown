@@ -309,8 +309,11 @@ let librarySortableObject = {
 	onEnd: function (evt) {
 		// Remove event listeners from dragged element, put a new one on the clone
 		// (Because the clone is added to the library, the original element is dragged away)
-		evt.item.removeEventListener('click',addToDiary);
-		evt.clone.addEventListener('click',addToDiary);
+		//evt.item.removeEventListener('click',addToDiary);
+		//evt.clone.addEventListener('click',addToDiary);
+
+		updatePhraseListeners(evt.item, "diary");
+		updatePhraseListeners(evt.clone, "library");
 
   		evt.to;    // target list
   		evt.from;  // previous list
@@ -381,6 +384,8 @@ function addToDiary (newPhrase) {
 	// Add subject if phrase doesn't already have one
 	addSubject(newPhrase);
 
+	updatePhraseListeners(newPhrase,"diary");
+
 	// TODO Fix animation here?
 	//newPhrase.classList.add("dragged");
 	//setTimeout(newPhrase.classList.remove("dragged"), 5000);
@@ -417,7 +422,7 @@ function hasSubject (phrase) {
 	if (startsWithVerb) return false;
 
 	let nounThenVerb = nlp(phraseText).match('#Noun * #Verb').found; // Does a noun come before a verb
-	if (match) return true;
+	if (nounThenVerb) return true;
 	
 	return false;
 }
@@ -440,9 +445,13 @@ Sortable.create( trash, {
 	filter: "#trash", // Selectors that do not lead to dragging
 	onAdd: function (evt) {
 		// When a phrase is dropped into the trash "list"
-		evt.item.remove();
+		removeFromDiary(evt.item);
 	}
 });
+
+function removeFromDiary (phrase) {
+	phrase.remove();
+}
 
 /*trash.addEventListener('dragover', dragOverTrash);
 function dragOverTrash (ev) {
@@ -486,7 +495,7 @@ document.querySelector('#clear-diary').onclick = function () {
 		phrase.classList.add("fade");
 		// Remove all contents of #diary after animation finishes 
 		phrase.addEventListener('animationend', () => {
-			phrase.remove();
+			removeFromDiary(phrase);
 		});
 	});
 }
@@ -544,7 +553,7 @@ function addItemToCategory (item, category, type) {
 	let p = document.createElement("p");
 	p.innerHTML = item.name;
 	element.append(p);
-	container.addEventListener('click',addToDiary);
+	updatePhraseListeners(container,"library");
 	container.append(element);
 	document.querySelector('#'+category).append(container);
 }
@@ -646,9 +655,137 @@ function addPhraseToLibrary (phraseObj, category) {
 	
 	//element.style.transform = "rotate("+ random(-5,5) +"deg)";
 
-	container.addEventListener('click',addToDiary);
+	updatePhraseListeners(container,"library");
+	
 	container.append(element);
 	document.querySelector('#'+category).append(container);
+}
+
+// Add/remove event listeners to a phrase element in the "library" or "diary" context
+// Called when the phrase library is first created, 
+// and when a phrase is dragged/click-added to the diary.
+function updatePhraseListeners (element, context="library") {
+
+	// Both diary and library events
+	element.addEventListener('contextmenu',showPhraseContextMenu); // right click
+
+	if (context === "library") {
+		element.addEventListener('click',addToDiary);
+
+	} else if (context === "diary") {
+		// Remove any addToDiary event listeners (important because for dragged 
+		// elements, the original element is dragged away, and a clone is added in
+		// the original's place, so need to remove the dragged element's library-specific events)
+		element.removeEventListener('click',addToDiary);
+
+		element.addEventListener('click',toggleDiaryPhraseSelect);
+	}
+}
+
+function toggleDiaryPhraseSelect (event) {
+	// Prevent this event from bubbling up to any outer phrases, so that 
+	// toggling selection only runs for the innermost phrase (if it's nested in an inner slot)
+	// Otherwise you couldn't select inner slot phrases.
+	event.stopPropagation();
+
+	let selectedPhrase = event.currentTarget;
+
+	// Unselect any other diary phrases; there can only be one
+	let diaryPhrases = document.querySelector("#diary").querySelectorAll(".phrase-container");
+	diaryPhrases.forEach ( (phrase) => {
+		if (phrase === selectedPhrase) return;
+		else phrase.classList.remove("selected") 
+	});
+
+	selectedPhrase.classList.toggle("selected");
+
+	// Begin selection mode - listen for arrow keys, enter, and delete
+	if (selectedPhrase.classList.contains("selected")) {
+		document.addEventListener('keydown',keydownWhilePhraseSelected);
+	} else {
+		endEditPhraseText(selectedPhrase);
+		document.removeEventListener('keydown',keydownWhilePhraseSelected);
+	}
+}
+
+// Function to run when a key is pressed while a diary phrase is selected
+// Checks the key code and runs the appropriate operation
+function keydownWhilePhraseSelected (event) {
+	let selectedPhrase = document.querySelector("#diary").querySelector(".selected");
+
+	// If there is no selected phrase, this event listener shouldn't be around
+	if (!selectedPhrase) {
+		document.removeEventListener('keydown',keydownWhilePhraseSelected);
+		return;
+	}
+	//console.log(`Key pressed: ${event.code}, selectedPhrase:`,selectedPhrase);
+
+	switch (event.code) {
+		case "ArrowRight":
+			//movePhrase(selectedPhrase, 'right');
+			break;
+		case "ArrowLeft":
+			//movePhrase(selectedPhrase, 'left');
+			break;
+		case "ArrowUp":
+			//cyclePhraseText(selectedPhrase, 'up');
+			break;
+		case "ArrowDown":
+			//cyclePhraseText(selectedPhrase, 'down');
+			break;
+		case "Enter":
+			event.preventDefault();
+			toggleEditPhraseText(selectedPhrase);
+			break;
+		case "Backspace":
+			// Don't do special behavior if phrase is currently editable
+			if (!selectedPhrase.isContentEditable)
+				removeFromDiary(selectedPhrase);
+			break;
+	}
+}
+
+function toggleEditPhraseText (phrase) {
+	if (phrase.isContentEditable) endEditPhraseText (phrase);
+	else startEditPhraseText (phrase);
+}
+function startEditPhraseText (phrase) {
+	phrase.contentEditable = 'true';
+	setCursorToEnd(phrase);
+}
+function endEditPhraseText (phrase) {
+	phrase.contentEditable = 'false';
+}
+
+// Via https://stackoverflow.com/questions/1125292/how-to-move-cursor-to-end-of-contenteditable-entity/3866442#3866442
+// TODO Alter this to ignore innerslots
+function setCursorToEnd (contentEditableElement) {
+    var range, selection;
+    if(document.createRange) { //Firefox, Chrome, Opera, Safari, IE 9+
+        range = document.createRange();//Create a range (a range is a like the selection but invisible)
+        range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
+        range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+        selection = window.getSelection();//get the selection object (allows you to change selection)
+        selection.removeAllRanges();//remove any selections already made
+        selection.addRange(range);//make the range you have just created the visible selection
+    }
+    else if (document.selection) { //IE 8 and lower
+        range = document.body.createTextRange();//Create a range (a range is a like the selection but invisible)
+        range.moveToElementText(contentEditableElement);//Select the entire contents of the element with the range
+        range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+        range.select();//Select the range (make it the visible selection
+    }
+}
+
+// Event triggered by right-clicking a phrase in either library or diary
+// Show a custom context menu containing: a list of all alternate text representations
+// for this phrase, which user may click to change the current representation to. 
+// The menu also contains: "Edit phrase", "Edit phrase text", 
+// and (if in library) "Add to diary", "Add to diary without 'I'",
+// (if in diary) "Select", "Delete from diary"
+function showPhraseContextMenu (event) {
+	//event.preventDefault();
+	console.log("Phrase has been right-clicked. Show context menu containing alt phrases");
 }
 
 // Make and return an inner slot element
@@ -686,69 +823,6 @@ function makeInnerSlot (type) {
 	emptyIndicator.draggable = false;
 	innerSlot.append(emptyIndicator);
 	return innerSlot;
-}
-
-// // Global variable containing the currently dragged element
-// var draggedPhrase = null;
-
-// // Set the drag-and-drop payload
-// // When a phrase is being dragged from the library
-// // Note: all custom data types get converted to all-lowercase
-// // And for some reason we can't access payload data from dragover events (only drop?)
-// // So using the global draggedPhrase variable to manage
-// function dragStartFromLibrary (event) {
-// 	// Create a new .diary-phrase element to add to the entry from the library
-// 	console.log("this", this);
-// 	draggedPhrase = makeDiaryPhrase(this.id);
-// 	event.dataTransfer.effectAllowed = 'move';
-// 	event.dataTransfer.setData('from-library', true);
-// 	event.dataTransfer.setData('text/plain', this.id);
-// }
-// // When a phrase is being dragged from the diary entry
-// function dragStartFromEntry (event) {
-// 	draggedPhrase = event.target;
-// 	event.dataTransfer.effectAllowed = 'move';
-// 	event.dataTransfer.setData('text/plain', this.id);
-// }
-
-// Set the drop target (the diary entry) by setting its dnd event listeners
-//let diaryPage = document.querySelector(".page-right");
-//diaryPage.addEventListener('dragover', dragOverDiary);
-//diaryPage.addEventListener('dragenter', dragEnterTrash);
-//diaryPage.addEventListener('dragleave', dragLeaveDiary);
-//diaryPage.addEventListener('drop', dropInDiary);
-
-
-function dragOverDiary (event) {
-	event.preventDefault();
-
-	/*
-	if (document.querySelector(".diary-phrase:not(.dragged)")) {
-		// Insert a temporary element before or after the nearest element
-		placePhraseInList(draggedPhrase);
-	} else {
-		document.querySelector("#diary").append(draggedPhrase);
-	}
-	draggedPhrase.classList.add("dragged");*/
-	return false;
-}
-
-function dragEnterDiary (event) {
-	// Could eventually have an effect here?
-	//console.log("dragenter event.target:", event.target);
-}
-
-function dragLeaveDiary (event) {
-	// If you drag onto diary and then off, remove temp phrase
-	dragged = document.querySelector(".dragged");
-	if (dragged) { document.querySelector(".dragged").remove(); }
-}
-
-function dropInDiary (event) {
-	// (New phrase added in dragOverDiary)
-	removeClassOn("highlight", "diary-phrase");
-	draggedPhrase.classList.remove("dragged");
-	draggedPhrase = null;
 }
 
 // Sets SVG attributes given in obj for a new line

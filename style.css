@@ -215,6 +215,9 @@ body {
 	font-family: 'Helvetica';
 	font-weight: 100;
 }
+.selected>.phrase {
+	border-bottom-style: double;
+}
 #diary .phrase {
 	font-family: 'learning_curveregular', 'Helvetica';
     font-size: 1.4rem;
@@ -290,6 +293,7 @@ body {
 
 /* Container for a single phrase */
 .phrase-container {
+	outline: none;
 	/*background: transparent;*/
 	z-index: 2;
 	display: flex;

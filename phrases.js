@@ -1,77 +1,115 @@
 
 var people = [ 
 	{
+		id: "person1",
 		name: "Melanie",
 		pronoun: "she",
 		relation: "self",
-		tags: ["quiet", "creative", "insecure", "dislikes authority"]
+		tags: ["quiet", "creative", "insecure", "dislikes authority"],
+		type: "person"
 	},{
+		id: "person2",
 		name: "Neil",
 		pronoun: "he",
 		relation: "partner",
-		tags: ["mellow", "strong", "avoids drama", "goofy"]
+		tags: ["mellow", "strong", "avoids drama", "goofy"],
+		type: "person"
 	},{
+		id: "person3",
 		name: "Nybble",
 		pronoun: "she",
 		relation: "pet",
-		tags: ["small", "particular"]
+		tags: ["small", "particular"],
+		type: "person"
 	},{
+		id: "person4",
 		name: "Bit",
 		pronoun: "he",
 		relation: "pet",
-		tags: ["big", "loves pets", "cuddly"]
+		tags: ["big", "loves pets", "cuddly"],
+		type: "person"
 	},{
+		id: "person5",
 		name: "Mom",
 		pronoun: "she",
-		relation: "parent"
+		relation: "parent",
+		type: "person"
 	},{
+		id: "person6",
 		name: "Dad",
 		pronoun: "he",
-		relation: "parent"
+		relation: "parent",
+		type: "person"
 	},{
+		id: "person7",
 		name: "Alan",
 		pronoun: "he",
-		relation: "sibling"
+		relation: "sibling",
+		type: "person"
 	},{
+		id: "person8",
 		name: "Max",
-		pronoun: "they"
+		pronoun: "they",
+		type: "person"
 	},{
+		id: "person9",
 		name: "Barrett",
-		pronoun: "he"
+		pronoun: "he",
+		type: "person"
 	},{
+		id: "person10",
 		name: "Chloe",
-		pronoun: "she"
+		pronoun: "she",
+		type: "person"
 	},{
+		id: "person11",
 		name: "Nick",
-		pronoun: "he"
+		pronoun: "he",
+		type: "person"
 	}
 ];
 
 var places = [
 	{
+		id: "place1",
 		name: "home",
-		type: "residence"
+		placetype: "residence",
+		type: "place"
 	},{
+		id: "place2",
 		name: "work",
-		type: "work"
+		placetype: "work",
+		type: "place"
 	},{
+		id: "place3",
 		name: "Neary Lagoon",
-		type: "park"
+		placetype: "park",
+		type: "place"
 	},{
+		id: "place4",
 		name: "Yan Flower House",
-		type: "residence"
+		placetype: "residence",
+		type: "place"
 	},{
+		id: "place5",
 		name: "Barrett's house",
-		type: "residence"
+		placetype: "residence",
+		type: "place"
 	},{
+		id: "place6",
 		name: "parent's house",
-		type: "residence"
+		placetype: "residence",
+		type: "place"
 	},{
+		id: "place7",
 		name: "bookshop",
-		type: "store"
+		placetype: "store",
+		type: "place"
 	},{
+		id: "place8",
 		name: "beach",
-		type: "beach"
+		placetype: "beach",
+		type: "place"
 	}
 ];
 
@@ -112,7 +150,7 @@ var phrases = [
 		relatedPhrases : []
 	},{
 		id : "was-adj-to",
-		text : [ "was #adj to #someone" ],
+		text : [ "was #adj to #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : []
@@ -227,7 +265,7 @@ var phrases = [
 		relatedPhrases : []
 	},{
 		id : "shared-work",
-		text : [ "shared my work", "shared my work with #someone", 
+		text : [ "shared my work", "shared my work with #person", 
 				 "shared work-in-progress" ],
 		type : "action",
 		tags: ["expression"],
@@ -360,23 +398,23 @@ var phrases = [
 		emoji : "🤥"
 	},{
 		id : "avoided-someone",
-		text : [ "avoided #someone" ],
+		text : [ "avoided #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : ["avoided-something"]
 	},{
 		id : "chatted-with",
-		text : [ "chatted with #someone" ],
+		text : [ "chatted with #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : [],
 		emoji : "👥"
 	},{
 		id : "collaborated",
-		text : [ "collaborated with #someone", 
-				 "worked together with #someone", 
-				 "worked with #someone",
-				 "worked with #someone on #project" 
+		text : [ "collaborated with #person", 
+				 "worked together with #person", 
+				 "worked with #person",
+				 "worked with #person on #project" 
 				],
 		type : "action",
 		tags: ["work", "social"],
@@ -393,7 +431,7 @@ var phrases = [
 		id : "daydreamed",
 		text : [ "daydreamed", 
 				 "daydreamed about #event", 
-				 "daydreamed about #someone",
+				 "daydreamed about #person",
 				 "daydreamed about #place"
 				],
 		type : "action",
@@ -476,7 +514,7 @@ var phrases = [
 		relatedPhrases : []
 	},{
 		id : "helped-someone",
-		text : [ "did something for #someone", "helped #someone", "did a favor for #someone" ],
+		text : [ "did something for #person", "helped #person", "did a favor for #person" ],
 		type : "action",
 		tags: ["social"],
 		sentiment: "positive",
@@ -485,9 +523,9 @@ var phrases = [
 	},{
 		id : "got-help",
 		text : [ "asked for help", 
-				 "got help from #someone", 
-				 "#someone helped me", 
-				 "got help on something from #someone" 
+				 "got help from #person", 
+				 "#person helped me", 
+				 "got help on something from #person" 
 				],
 		type : "action",
 		tags: ["social"],
@@ -576,7 +614,7 @@ var phrases = [
 		emoji : "💡"
 	},{
 		id : "nice-convo",
-		text : [ "had a nice conversation with #someone" ],
+		text : [ "had a nice conversation with #person" ],
 		type : "action",
 		tags: ["social"],
 		sentiment: "positive",
@@ -584,7 +622,7 @@ var phrases = [
 		emoji : "💬"
 	},{
 		id : "heard-from",
-		text : [ "heard from #someone" ],
+		text : [ "heard from #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : [],
@@ -605,7 +643,7 @@ var phrases = [
 		emoji : "🤝"
 	},{
 		id : "hung-out-with",
-		text : [ "hung out with #someone", "spent quality time with #someone" ],
+		text : [ "hung out with #person", "spent quality time with #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : [],
@@ -625,6 +663,12 @@ var phrases = [
 		relatedPhrases : [],
 		emoji : "🎨"
 	},{
+		id : "practiced",
+		text : [ "practiced", "practiced a tool", "practiced an instrument" ],
+		type : "action",
+		tags: ["expression"],
+		relatedPhrases : ["made-something"]
+	},{
 		id : "wrote",
 		text : [ "wrote something", "did some writing" ],
 		type : "action",
@@ -640,7 +684,7 @@ var phrases = [
 		emoji : "😔"
 	},{
 		id : "missing-someone",
-		text : [ "missed #someone", "wished #someone was here"],
+		text : [ "missed #person", "wished #person was here"],
 		type : "action",
 		tags: ["mind"],
 		sentiment: "negative",
@@ -655,7 +699,7 @@ var phrases = [
 		emoji : "🏠"
 	},{
 		id : "someone-moved",
-		text : [ "#someone moved away" ],
+		text : [ "#person moved away" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : ["moved", "house-searched"],
@@ -683,27 +727,27 @@ var phrases = [
 		emoji : "🏠"
 	},{
 		id : "dated",
-		text : [ "went on a date with #someone", "went out with #someone" ],
+		text : [ "went on a date with #person", "went out with #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : []
 	},{
 		id : "engaged",
-		text : [ "got engaged to #someone" ],
+		text : [ "got engaged to #person" ],
 		type : "action",
 		tags: ["major life events"],
 		sentiment: "positive",
 		relatedPhrases : ["proposed", "married"]
 	},{
 		id : "proposed",
-		text : [ "proposed to #someone" ],
+		text : [ "proposed to #person" ],
 		type : "action",
 		tags: ["major life events"],
 		sentiment: "positive",
 		relatedPhrases : ["engaged", "married"]
 	},{
 		id : "married",
-		text : [ "married #someone", "got married to #someone" ],
+		text : [ "married #person", "got married to #person" ],
 		type : "action",
 		tags: ["major life events"],
 		sentiment: "positive",
@@ -723,7 +767,7 @@ var phrases = [
 		relatedPhrases : []
 	},{
 		id : "adopted",
-		text : [ "adopted #someone" ],
+		text : [ "adopted #person" ],
 		type : "action",
 		tags: ["major life events"],
 		sentiment: "positive",
@@ -737,7 +781,7 @@ var phrases = [
 		relatedPhrases : []
 	},{
 		id : "died",
-		text : [ "#someone died", "#someone passed away" ],
+		text : [ "#person died", "#person passed away" ],
 		type : "event",
 		tags: ["major life events"],
 		sentiment: "negative",
@@ -799,7 +843,7 @@ var phrases = [
 		emoji : "🚘"
 	},{
 		id : "ran-into",
-		text : [ "ran into #someone" ],
+		text : [ "ran into #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : [],
@@ -813,7 +857,7 @@ var phrases = [
 		emoji : "🔄"
 	},{
 		id : "reached-out-to",
-		text : [ "reached out to #someone" ],
+		text : [ "reached out to #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : [],
@@ -904,7 +948,7 @@ var phrases = [
 		emoji : "🤗"
 	},{
 		id : "fight",
-		text : [ "#someone and #someone fought", "#someone and #someone got into a fight" ],
+		text : [ "#person and #person fought", "#person and #person got into a fight" ],
 		type : "event",
 		tags: ["social"],
 		sentiment: "negative",
@@ -913,9 +957,9 @@ var phrases = [
 	},{
 		id : "disagreement",
 		text : [ "got into a disagreement",
-			 	 "got into a disagreement with #someone",
+			 	 "got into a disagreement with #person",
 			 	 "got into an argument",
-			 	 "got into an argument with #someone"
+			 	 "got into an argument with #person"
 			 	],
 		type : "action",
 		tags: ["social"],
@@ -924,14 +968,14 @@ var phrases = [
 		emoji : "👊"
 	},{
 		id : "misunderstood",
-		text : [ "misunderstood #someone" ],
+		text : [ "misunderstood #person" ],
 		type : "action",
 		tags: ["social"],
 		sentiment: "negative",
 		relatedPhrases : []
 	},{
 		id : "misunderstood-me",
-		text : [ "#someone misunderstood me" ],
+		text : [ "#person misunderstood me" ],
 		type : "event",
 		tags: ["social"],
 		sentiment: "negative",
@@ -959,14 +1003,14 @@ var phrases = [
 		emoji: "👟"
 	},{
 		id : "cared-for",
-		text : [ "took care of #someone" ],
+		text : [ "took care of #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : [],
 		emoji: "💗"
 	},{
 		id : "took-someone",
-		text : [ "took #someone to #place" ],
+		text : [ "took #person to #place" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : ["cared-for"]
@@ -1031,7 +1075,7 @@ var phrases = [
 		relatedPhrases : []
 	},{
 		id : "people-visited",
-		text : [ "had #someone over" ],
+		text : [ "had #person over" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : [ "visited-people" ],
@@ -1045,14 +1089,14 @@ var phrases = [
 		emoji : "🤝"
 	},{
 		id : "met-someone",
-		text : [ "met someone new", "met #someone" ],
+		text : [ "met someone new", "met #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : [],
 		emoji : "🤝"
 	},{
 		id : "introduced",
-		text : [ "introduced #someone to #someone" ],
+		text : [ "introduced #person to #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : [],
@@ -1094,14 +1138,14 @@ var phrases = [
 		emoji: "👾"
 	},{
 		id : "reassured",
-		text : [ "reassured #someone", "comforted #someone" ],
+		text : [ "reassured #person", "comforted #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : [],
 		emoji: "🧸"
 	},{
 		id : "started-conversation",
-		text : [ "struck up a conversation with #someone", "started a conversation with #someone" ],
+		text : [ "struck up a conversation with #person", "started a conversation with #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : [ "met-someone" ],
@@ -1151,35 +1195,35 @@ var phrases = [
 		emoji: "💤"
 	},{
 		id : "dreamt-about",
-		text : [ "dreamt about #event", "dreamt about #someone", "dreamt about #place" ],
+		text : [ "dreamt about #event", "dreamt about #person", "dreamt about #place" ],
 		type : "action",
 		tags: ["mind"],
 		relatedPhrases : ["dreamed"],
 		emoji: "💤"
 	},{
 		id : "shared",
-		text : [ "opened up to #someone", "shared a personal thing with #someone" ],
+		text : [ "opened up to #person", "shared a personal thing with #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : [],
 		emoji: "👐"
 	},{
 		id : "told-secret",
-		text : [ "told #someone a secret", "told #someone a secret" ],
+		text : [ "told #person a secret", "told #person a secret" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : ["heard-secret"],
 		emoji: "👐"
 	},{
 		id : "heard-secret",
-		text : [ "#someone told me a secret", "heard a secret" ],
+		text : [ "#person told me a secret", "heard a secret" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : ["told-secret"],
 		emoji: "👐"
 	},{
 		id : "gossiped",
-		text : [ "gossiped", "gossiped about #someone", "talked about #someone" ],
+		text : [ "gossiped", "gossiped about #person", "talked about #person" ],
 		type : "action",
 		tags: ["social"],
 		relatedPhrases : []
@@ -1199,7 +1243,7 @@ var phrases = [
 		emoji: "🙋‍♂️"
 	},{
 		id : "someone-was-adj",
-		text : [ "#someone was #adj" ],
+		text : [ "#person was #adj" ],
 		type : "event",
 		tags: ["social"],
 		relatedPhrases : []
@@ -1213,7 +1257,7 @@ var phrases = [
 	},{
 		id : "got-recognition",
 		text : [ "people said nice things about me", 
-				 "#someone said nice things about me", 
+				 "#person said nice things about me", 
 				 "felt recognized", 
 				 "got recognition" ],
 		type : "event",
@@ -1223,7 +1267,7 @@ var phrases = [
 		emoji: "🤗"
 	},{
 		id : "angry-with-me",
-		text : [ "#someone got angry with me", "#someone got upset with me" ],
+		text : [ "#person got angry with me", "#person got upset with me" ],
 		type : "event",
 		tags: ["social"],
 		sentiment: "negative",
@@ -1231,14 +1275,14 @@ var phrases = [
 		emoji: "😡"
 	},{
 		id : "someone-did-something-cool",
-		text : [ "#someone did something cool" ],
+		text : [ "#person did something cool" ],
 		type : "event",
 		tags: ["social"],
 		relatedPhrases : [],
 		emoji: "😎"
 	},{
 		id : "someone-bothered",
-		text : [ "#someone bothered me", "#someone got on my nerves", "#someone annoyed me" ],
+		text : [ "#person bothered me", "#person got on my nerves", "#person annoyed me" ],
 		type : "event",
 		tags: ["social"],
 		sentiment: "negative",
@@ -1246,7 +1290,7 @@ var phrases = [
 		emoji: "😑"
 	},{
 		id : "someone-was-jerk",
-		text : [ "#someone was a jerk to me", "#someone was bitchy at me", "#someone yelled at me", "#someone got angry at me" ],
+		text : [ "#person was a jerk to me", "#person was bitchy at me", "#person yelled at me", "#person got angry at me" ],
 		type : "event",
 		tags: ["social"],
 		sentiment: "negative",
@@ -1280,8 +1324,8 @@ var phrases = [
 		sentiment: "negative",
 		relatedPhrases : ["storm"]
 	},{
-		id : "alarm",
-		text : [ "an alarm went off" ],
+		id : "evacuated",
+		text : [ "#place was evacuated" ],
 		type : "event",
 		tags: ["external"],
 		sentiment: "negative",
@@ -1323,7 +1367,7 @@ var phrases = [
 		relatedPhrases : ["car-troubles"]
 	},{
 		id : "was-introduced",
-		text : [ "#someone introduced me to #someone" ],
+		text : [ "#person introduced me to #person" ],
 		type : "event",
 		tags: ["social"],
 		relatedPhrases : [ "met-someone", "introduced" ],
@@ -1510,13 +1554,13 @@ var phrases = [
 		supressSubject: true
 	},{
 		id : "with",
-		text : [ "#action with #someone" ],
+		text : [ "#action with #person" ],
 		type : "connector",
 		relatedPhrases : [],
 		supressSubject: true
 	},{
 		id : "for",
-		text : [ "#action for #someone" ],
+		text : [ "#action for #person" ],
 		type : "connector",
 		relatedPhrases : [],
 		supressSubject: true

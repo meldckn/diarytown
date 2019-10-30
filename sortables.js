@@ -24,13 +24,14 @@ let innerSortableObject = {
 	emptyInsertThreshold: 20,
 	filter: ".empty-indicator",  // Selectors that do not lead to dragging
 	onAdd: function (evt) {
-		// When a phrase is added to an inner slot, hide its empty-indicator
+		afterAddToInnerSlot (evt.item, evt.to);
+		/*// When a phrase is added to an inner slot, hide its empty-indicator
 		// and show a distinguishing background color
 		// Use :scope selector to select only direct children, not descendants
 		evt.to.querySelector(':scope > .empty-indicator').style.display = "none";
 		// TODO slightly darken the inner slot's parent color for the inner slot background 
 		evt.to.style.background = "#00a6de"; 
-		transformCompoundPhrase(evt.to.parentElement.parentElement, evt.item);
+		transformCompoundPhrase(evt.to.parentElement.parentElement, evt.item);*/
 	},
 	// Element is removed from the list into another list
 	onRemove: function (evt) {

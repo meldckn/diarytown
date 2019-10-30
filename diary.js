@@ -242,8 +242,8 @@ function conjugatePhraseElement(phraseElement, tense) {
 	// TODO change this to more straightforward check once we have overall database
 	// e.g., if (isSimplePhrase(phraseElement.id)) return;
 	let phraseData = DataWrangler.getPhraseById(phraseElement.id);
-	if (!phraseData) return;
-	if (phraseData.type === "connector" || phraseData.type === "modifier") return;
+	let phraseType = phraseData.type;
+	if (phraseType==="connector" || phraseType==="modifier" || phraseType==="person" || phraseType==="place") return;
 
 	let phraseText = phraseElement.querySelector('.phrase-container p').innerText;
 	let verb = getVerb(phraseText);
@@ -258,6 +258,113 @@ function conjugatePhraseElement(phraseElement, tense) {
 	phraseElement.querySelector('.phrase-container p').innerText = phraseText.replace(verb,present);
 }
 
+let settings = {
+	autoslot : true
+};
+
+function getLastDiaryPhrase() {
+	// Will never grab an innerslotted phrase
+	// Not sure if you'd want to
+	return document.querySelector('#diary').lastChild;
+}
+
+// Return the type (e.g., "place", "action") of the rightmost
+// innerslot of the current text of the given phrase data object.
+// Return null or -1 if phrase has no inner slots. 
+// TODO when we add cycling through alt text, will need to alter this
+function getRightmostInnerSlotType (phraseData) {
+	// Parse text for inner slots
+	const regex = /(?<=#)([a-z-]*)/gim;
+	if (!phraseData["text"]) {
+		return null; // No text property on this phrase
+	}
+	let str = phraseData["text"][0];
+	let matches = str.match(regex);
+
+	if (matches) return matches.last();
+	else return null; // No inner slots
+}
+
+function getLeftmostInnerSlotType (phraseData) {
+	// Parse text for inner slots
+	const regex = /(?<=#)([a-z-]*)/gim;
+	if (!phraseData["text"]) {
+		return null; // No text property on this phrase
+	}
+	let str = phraseData["text"][0];
+	let matches = str.match(regex);
+
+	if (matches) return matches[0];
+	else return null; // No inner slots
+}
+
+function getRightmostInnerSlotElement (phraseElement) {
+	return phraseElement.childNodes[0].querySelector(".inner-slot:last-of-type");
+}
+function getLeftmostInnerSlotElement (phraseElement) {
+	return phraseElement.childNodes[0].querySelector(".inner-slot:first-of-type");
+}
+
+// Things to do after the given new phrase element is added to the given inner slot
+function afterAddToInnerSlot (newPhrase, innerSlotElement) {
+	// When a phrase is added to an inner slot, hide its empty-indicator
+	// and show a distinguishing background color
+	// Use :scope selector to select only direct children, not descendants
+	innerSlotElement.querySelector(':scope > .empty-indicator').style.display = "none";
+	// TODO slightly darken the inner slot's parent color for the inner slot background 
+	innerSlotElement.style.background = "#00a6de"; 
+	transformCompoundPhrase(innerSlotElement.parentElement.parentElement, newPhrase);
+}
+
+//DataWrangler.getAllPhrases().forEach((phrase) => {getLeftmostInnerSlotType(phrase);});
+
+// Autoslot phrase into diary
+function addPhraseWithAutoSlot (newPhrase) {
+
+	let newPhraseData = DataWrangler.getPhraseById(newPhrase.id);
+	let lastPhrase = getLastDiaryPhrase();
+	if (!lastPhrase) {
+		// No phrases in diary yet
+		document.querySelector('#diary').append(newPhrase);
+		return;
+	}
+
+	let lastPhraseData = DataWrangler.getPhraseById(lastPhrase.id);
+	let lastPhraseInnerType = getRightmostInnerSlotType(lastPhraseData);
+	let newPhraseInnerType = getLeftmostInnerSlotType(newPhraseData);
+
+	// If the last diary phrase (before this one) has (or ends with?) 
+	// an empty rightmost innerslot with a type that matches the new phrase's type, 
+	// put the new phrase in that innerslot instead of appending to diary
+	if (typesMatch(getRightmostInnerSlotType(lastPhraseData), newPhraseData.type)) {
+		let lastPhraseRightInnerSlot = getRightmostInnerSlotElement(lastPhrase);
+		// TODO check if (lastPhraseRightInnerSlot is empty) else append to diary
+		lastPhraseRightInnerSlot.append(newPhrase);
+		afterAddToInnerSlot(newPhrase,lastPhraseRightInnerSlot);
+
+	// If the new phrase has (starts with?) an inner slot with a type that matches 
+	// the type of the last diary phrase, append the new phrase to the diary and 
+	// move the last phrase in the new phrase's inner slot
+	} else if (typesMatch(getLeftmostInnerSlotType(newPhraseData), lastPhraseData.type)) {
+		document.querySelector('#diary').append(newPhrase);
+		let newPhraseLeftInnerSlot = getLeftmostInnerSlotElement(newPhrase);
+		// TODO check if (newPhraseLeftInnerSlot is empty) else append to diary
+		newPhraseLeftInnerSlot.append(lastPhrase);
+		afterAddToInnerSlot(lastPhrase, newPhraseLeftInnerSlot);
+	} else {
+		// No matching phrase + inner slot to combine
+		document.querySelector('#diary').append(newPhrase);
+	}
+}
+
+// Return true if the given phrase type strings (event, action, connector, modifier, person, place) match
+// either exactly or if one is "event" and the other is "action"
+function typesMatch (first, second) {
+	if ( (first==="event" && second==="action") || (first==="action" && second==="event") ) {
+		return true;
+	} else return first === second;
+}
+
 // Add a given phrase/action/event (by id) to the diary entry
 // -- uses the event which triggered it (a phrase's onclick)
 // TODO check that there is a valid phrase in the event target
@@ -267,7 +374,8 @@ function conjugatePhraseElement(phraseElement, tense) {
 function addToDiary (newPhrase) {
 
 	if (!isHtmlElement(newPhrase)) {
-		// Was not called with a valid HTML element (of the new phrase)
+		// This phrase was click-added instead of dragged
+		// -Was not called with a valid HTML element (of the new phrase)
 		// So create one using the current event's target 
 
 		// Deeply clone the phrase container that was clicked on (w/ all children)
@@ -276,15 +384,21 @@ function addToDiary (newPhrase) {
 
 		// TODO See if we can simulate a drag-to-diary action here?
 
-		document.querySelector('#diary').append(newPhrase);
+		if (settings.autoslot) 
+			addPhraseWithAutoSlot (newPhrase);
+		else 
+			document.querySelector('#diary').append(newPhrase);
+	} else {
+		// Add subject if phrase doesn't already have one
+		addSubject(newPhrase);
 	}
 
 	// Make each nested inner slot Sortable
 	makeInnerSlotsSortable(newPhrase);
 
-	// Add subject if phrase doesn't already have one
-	addSubject(newPhrase);
-
+	// Auto-select the newly added phrase
+	toggleDiaryPhraseSelect(newPhrase);
+	
 	updatePhraseListeners(newPhrase,"diary");
 
 	// TODO Fix animation here?
@@ -297,7 +411,8 @@ function addToDiary (newPhrase) {
 function addSubject (phrase) {
 	let phraseData = DataWrangler.getPhraseById(phrase.id);
 	// People and places (as simple phrases) are not added to the Loki db
-	if (!phraseData) return;
+	let phraseType = phraseData.type;
+	if (phraseType==="person" || phraseType==="place") return;
 
 	// Some connectors & modifiers don't have subjects and shouldn't have ones generated 
 	if (phraseData.supressSubject) return; 
@@ -424,7 +539,7 @@ function addItemToCategory (item, category, type) {
 	// TODO eventually give each data and HTML item a numerical, generated ID 
 	// so we don't need to worry about names with spaces, special characters,
 	// or duplicate names.
-	//container.id = "person-"+person.id;
+	container.id = item.id;
 	container.draggable = true;
 	let element = document.createElement("button");
 	element.classList.add("phrase");
@@ -516,14 +631,15 @@ function addPhraseToLibrary (phraseObj, category) {
 	element.className = "phrase " + category;
 
 	// Parse all inner slot #tags and text in between and around them
-	const regex = /(#[a-z-]*)|([a-z' -]+)/gim;
+	const regex = /(#[a-z-.]*)|([a-z' -]+)/gim;
 	let str = phraseObj["text"][0];
 	let matches = str.match(regex);
 
 	matches.forEach((match, groupIndex) => {
 		// If match is a #tag, add an inner slot
 		if (match.startsWith('#')) {
-			element.append(makeInnerSlot(match.substr(1))); // Strip the '#'
+			let innerSlotType = getInnerSlotTypeFromString(match);
+			element.append(makeInnerSlot(innerSlotType)); 
 		} else {
 			// Add text as <p>
 			let p = document.createElement("p");
@@ -538,6 +654,17 @@ function addPhraseToLibrary (phraseObj, category) {
 	
 	container.append(element);
 	document.querySelector('#'+category).append(container);
+}
+
+// Example: "#event.present" -> "event"
+function getInnerSlotTypeFromString (str) {
+	// Without the global flag, will only return the first inner slot type if there's multiple
+	const regex = /(?<=#)([a-z-]*)/im;
+	let match = str.match(regex);
+	if (match === null) {
+		console.warn(`Could not find an inner slot to type in '${str}'`);
+	}
+	return match[0];
 }
 
 // Add/remove event listeners to a phrase element in the "library" or "diary" context
@@ -561,13 +688,20 @@ function updatePhraseListeners (element, context="library") {
 	}
 }
 
-function toggleDiaryPhraseSelect (event) {
-	// Prevent this event from bubbling up to any outer phrases, so that 
-	// toggling selection only runs for the innermost phrase (if it's nested in an inner slot)
-	// Otherwise you couldn't select inner slot phrases.
-	event.stopPropagation();
 
-	let selectedPhrase = event.currentTarget;
+function toggleDiaryPhraseSelect (event) {
+
+	let selectedPhrase;
+	if (event.currentTarget) {
+		// Prevent this event from bubbling up to any outer phrases, so that 
+		// toggling selection only runs for the innermost phrase (if it's nested in an inner slot)
+		// Otherwise you couldn't select inner slot phrases.
+		event.stopPropagation();
+		selectedPhrase = event.currentTarget;
+	}
+	if (isHtmlElement(event)) {
+		selectedPhrase = event; 
+	}
 
 	// Unselect any other diary phrases; there can only be one
 	let diaryPhrases = document.querySelector("#diary").querySelectorAll(".phrase-container");
@@ -681,7 +815,7 @@ function makeInnerSlot (type) {
 
 	//console.log(type);
 	switch (type) {
-		case "someone": 
+		case "person": 
 			//<i class="fas fa-child empty-indicator"></i>
 			emptyIndicator = document.createElement("i");
 			emptyIndicator.className = "fas fa-child empty-indicator"; // or fa-user

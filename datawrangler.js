@@ -22,6 +22,8 @@ var DataWrangler = (function () {
 		// Add a bunch of phrase documents to the phrases collection
 		// (One document = one phrase)
 		phrases_db.insert(phrases);
+		phrases_db.insert(people);
+		phrases_db.insert(places);
 	}
 
 	function getAllPhrases () {

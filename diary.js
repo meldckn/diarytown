@@ -97,6 +97,7 @@ let library = document.querySelector('.library'); // Might eventually be multipl
 let trash = document.getElementById('trash');
 trash.draggable = false;
 
+// TODO move the transform logic into the phrases data of these connectors and modifiers
 function transformCompoundPhrase (outerPhrase, newPhrase) {
 	let slot = getSlotNumber(newPhrase);
 	switch (outerPhrase.id) {
@@ -130,6 +131,7 @@ function transformCompoundPhrase (outerPhrase, newPhrase) {
 		case 'need':
 		case 'needed':
 		case 'planned':
+		case 'decided':
 			stripI(newPhrase);
 			toPresent(newPhrase);
 			break;
@@ -326,6 +328,9 @@ function addPhraseWithAutoSlot (newPhrase) {
 	if (!lastPhrase) {
 		// No phrases in diary yet
 		document.querySelector('#diary').append(newPhrase);
+
+		// Add subject if phrase doesn't already have one
+		addSubject(newPhrase);
 		return;
 	}
 
@@ -354,6 +359,9 @@ function addPhraseWithAutoSlot (newPhrase) {
 	} else {
 		// No matching phrase + inner slot to combine
 		document.querySelector('#diary').append(newPhrase);
+
+		// Add subject if phrase doesn't already have one
+		addSubject(newPhrase);
 	}
 }
 

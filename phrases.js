@@ -358,14 +358,20 @@ var phrases = [
 		emoji : "📝"
 	},{
 		id : "went-to-party",
-		text : [ "went to a party" ],
+		text : [ "went to a party", "went to #person's party" ],
 		type : "action",
-		tags: ["recreation"],
+		tags: ["recreation", "social"],
 		relatedPhrases : [],
 		emoji : "🎉"
 	},{
+		id : "went-to-wedding",
+		text : [ "went to a wedding", "went to #person's wedding" ], //#person.possessive
+		type : "action",
+		tags: ["recreation", "social"],
+		relatedPhrases : []
+	},{
 		id : "went-to-sport",
-		text : [ "went to a sporting event" ],
+		text : [ "went to a game", "went to a match", "went to a tournament" ],
 		type : "action",
 		tags: ["recreation"],
 		relatedPhrases : ["played"],
@@ -774,7 +780,7 @@ var phrases = [
 		relatedPhrases : []
 	},{
 		id : "pregnant",
-		text : [ "am pregnant", "found out I'm pregnant", "found out we're pregnant" ],
+		text : [ "found out we're having a baby", "found out I'm pregnant", "found out we're pregnant" ],
 		type : "action",
 		tags: ["major life events"],
 		sentiment: "positive",
@@ -782,6 +788,13 @@ var phrases = [
 	},{
 		id : "died",
 		text : [ "#person died", "#person passed away" ],
+		type : "event",
+		tags: ["major life events"],
+		sentiment: "negative",
+		relatedPhrases : []
+	},{
+		id : "funeral",
+		text : [ "went to a funeral", "went to #person's funeral" ],
 		type : "event",
 		tags: ["major life events"],
 		sentiment: "negative",
@@ -1451,6 +1464,12 @@ var phrases = [
 		relatedPhrases : [],
 		supressSubject: false
 	},{
+		id : "decided",
+		text : [ "decided to #action" ], // #action.present
+		type : "modifier",
+		relatedPhrases : [],
+		supressSubject: false
+	},{
 		id : "started",
 		text : [ "started #action", "started to #action" ],
 		type : "modifier",
@@ -1473,6 +1492,12 @@ var phrases = [
 		text : [ "#action for the last time" ],
 		type : "modifier",
 		relatedPhrases : ["first-time"],
+		supressSubject: true
+	},{
+		id : "online",
+		text : [ "#action online" ],
+		type : "modifier",
+		relatedPhrases : [],
 		supressSubject: true
 	},{
 		id : "then",

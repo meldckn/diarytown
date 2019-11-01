@@ -313,8 +313,11 @@ function afterAddToInnerSlot (newPhrase, innerSlotElement) {
 	// and show a distinguishing background color
 	// Use :scope selector to select only direct children, not descendants
 	innerSlotElement.querySelector(':scope > .empty-indicator').style.display = "none";
-	// TODO slightly darken the inner slot's parent color for the inner slot background 
-	innerSlotElement.style.background = "#00a6de"; 
+	// Slightly darken the inner slot's parent color for the inner slot background 
+	let parentElement = innerSlotElement.parentElement,
+		parentStyle = window.getComputedStyle(parentElement),
+    	parentColor = tinycolor(parentStyle.getPropertyValue('background-color'));
+	innerSlotElement.style.background = parentColor.darken(8).toString();//"#00a6de"; 
 	transformCompoundPhrase(innerSlotElement.parentElement.parentElement, newPhrase);
 }
 

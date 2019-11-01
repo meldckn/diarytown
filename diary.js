@@ -378,15 +378,11 @@ function typesMatch (first, second) {
 
 // Add a given phrase/action/event (by id) to the diary entry
 // -- uses the event which triggered it (a phrase's onclick)
-// TODO check that there is a valid phrase in the event target
-// (i.e., that this was called from a phrase's onclick)
-// TODO if it wasn't, it would probably be called with a phrase id
-// so have that as fallback?
 function addToDiary (newPhrase) {
 
 	if (!isHtmlElement(newPhrase)) {
 		// This phrase was click-added instead of dragged
-		// -Was not called with a valid HTML element (of the new phrase)
+		// -- Was not called with a valid HTML element (of the new phrase)
 		// So create one using the current event's target 
 
 		// Deeply clone the phrase container that was clicked on (w/ all children)
@@ -400,9 +396,11 @@ function addToDiary (newPhrase) {
 		else 
 			document.querySelector('#diary').append(newPhrase);
 	} else {
-		// Add subject if phrase doesn't already have one
+		// Drag-added: Add subject if phrase doesn't already have one
 		addSubject(newPhrase);
 	}
+
+	// For both click-adds and drag-adds
 
 	// Make each nested inner slot Sortable
 	makeInnerSlotsSortable(newPhrase);
@@ -464,8 +462,6 @@ function dragOverTrash (ev) {
 	ev.preventDefault();
 }*/
 
-// TODO Ability to drag diary phrases to a trashcan 
-// (icon in the bottom right corner of diary page?)
 
 // TODO long click on diary phrases to enable multi-select 
 // (and then option to trash, unselect, and [stretch] move together in sort?)
@@ -600,6 +596,7 @@ function makeCategory (categoryName, phrasesTag) {
 	category.id = categoryName.toLowerCase().replace(/\s/g, "-");
 
 	let heading = document.createElement("h2");
+	heading.classList.add("category-name");
 	heading.innerHTML = categoryName.toTitleCase();
 	category.append(heading);
 
@@ -816,8 +813,6 @@ function showPhraseContextMenu (event) {
 function makeInnerSlot (type) {
 	let innerSlot = document.createElement("button");
 	innerSlot.classList.add("inner-slot");
-	// TODO set inner slot background color to slightly darker shade of parent's background
-	//innerSlot.style.background = 'white';
 	let emptyIndicator = document.createElement("div");
 	// TODO set visually different empty-indicators for different slot types
 
@@ -842,6 +837,7 @@ function makeInnerSlot (type) {
 		default: 
 			emptyIndicator = document.createElement("div");
 			emptyIndicator.className = "empty-indicator";
+			// TODO set inner slot background color to slightly darker shade of parent's background?
 			emptyIndicator.style.background = "white";
 	}
 	emptyIndicator.draggable = false;

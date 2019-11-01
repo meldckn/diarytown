@@ -43,21 +43,37 @@
     <div id="main-container">
         <!-- <div class="left-sidebar sidebar"></div> -->
         <div class="half-page half-page-left">
+            <div class="library-menu">
+                <button class="library-menu-item active">Nouns</button>
+                <button class="library-menu-item">Verbs</button>
+                <button class="library-menu-item">Joins</button>
+                <button class="library-menu-item">Modifiers</button>
+            </div>
+            <div class="library-submenu">
+                <button class="library-submenu-item category-name">People</button>
+                <button class="library-submenu-item category-name">Places</button>
+                <button class="library-submenu-item category-name">Spirits</button>
+                <button class="library-submenu-item category-name">Projects</button>
+                <button class="library-submenu-item category-name">Ideas</button>
+            </div>
+            <form class="search-box">
+                <input class="search-input" type="text" placeholder="search"><i class="fas fa-search"></i></input>
+            </form>
             <div class="categories-container">
                 <div class="category small-category phrases-container library" id="people">
-                    <h2><i class="fas fa-child empty-indicator header-icon"></i>People</h2>
+                    <h2 class="category-name"><i class="fas fa-child empty-indicator header-icon"></i>People</h2>
                 </div>
                 <div class="category small-category phrases-container library" id="places">
-                    <h2><i class="fas fa-map-marker empty-indicator header-icon"></i>Places</h2>
+                    <h2 class="category-name"><i class="fas fa-map-marker empty-indicator header-icon"></i>Places</h2>
                 </div>
                 <div class="category small-category phrases-container library" id="connectors">
-                    <h2>Connectors</h2>
+                    <h2 class="category-name">Connectors</h2>
                 </div>
                 <div class="category small-category phrases-container library" id="modifiers">
-                    <h2>Modifiers</h2>
+                    <h2 class="category-name">Modifiers</h2>
                 </div>
                 <!-- <div class="category phrases-container library" id="events">
-                    <h2>Events</h2>
+                    <h2 class="category-name">Events</h2>
                 </div> -->
             </div>
         </div>

@@ -90,7 +90,7 @@ body {
 .half-page {
 	flex: 1; /* Size relative to the divs to the left and right */ 
 	display: flex;
-	flex-wrap: wrap;
+    flex-direction: column;
 	/*max-width: 30vw;
 	height: 50vh;*/
 	height: 100vh;
@@ -332,6 +332,73 @@ body {
 
 /* Phrases Library */
 
+/* Menu */
+.library-menu {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: center;
+    width: 100%;
+    font-family: Helvetica;
+}
+.library-menu-item {
+	padding: 1.1rem;
+	padding-bottom: .6rem;
+    padding-top: 2rem;
+    margin: 0 .2rem;
+    border-bottom-right-radius: .4rem;
+    border-bottom-left-radius: .4rem;
+    background: #e8e8e8;
+    color: black;
+    text-transform: uppercase;
+    font-size: smaller;
+    letter-spacing: .1rem;
+    font-weight: bolder;
+}
+.library-menu-item:hover {
+    background: grey;
+    color: white;
+}
+.library-menu-item.active {
+    background: black;
+    color: white;
+}
+.library-submenu {
+	display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: center;
+    width: 100%;
+    padding-bottom: 1rem;
+}
+.library-submenu-item {
+	padding: 1rem;
+	/* font stuff in .category-name */
+}
+.search-box {
+	margin: auto;
+	background: lavender;
+    padding: 5px 10px;
+	border-radius: 1rem;
+	margin-bottom: 2rem;
+    cursor: text;
+}
+.search-input {
+	background: transparent;
+	width: 15rem;
+    font-size: small;
+}
+.fa-search {
+    cursor: pointer;
+    font-size: smaller;
+    color: gray;
+}
+input {
+	border: 0;
+    outline: 0;
+}
+
+
 /* Container that holds all categories */
 .categories-container {
 	display: flex;
@@ -339,6 +406,9 @@ body {
 	overflow: auto;
 	height: 80%;
 	margin: auto 4vw;
+    border-top: grey;
+    border-top-width: 1px;
+    border-top-style: solid;
 }
 .category {
 	/* flex-basis: default size of an element before the remaining space is distributed */
@@ -348,16 +418,20 @@ body {
 	padding: 10px 4px;
 }
 .category h2 {
-	font-size: small;
-    font-weight: lighter;
-    letter-spacing: .1rem;
-    font-variant: all-small-caps;
-    margin-left: .5rem;
+    margin-left: .2rem;
     margin-bottom: 1rem;
+    margin-top: 1rem;
     width: 100%;
 }
 .category:first-child {
 	padding-top: 0;
+}
+.category-name {
+	font-size: smaller;
+    font-weight: lighter;
+    letter-spacing: .1rem;
+    font-family: sans-serif;
+    font-style: italic;
 }
 
 /* Library categories size/layout adjustment for medium+ screens */
@@ -421,6 +495,7 @@ button {
 	outline: none; /* Prevent weird blue highlight for buttons */
 	/*opacity: 1;*/
     font-weight: 100;
+    cursor: pointer;
 }
 button:not(.phrase):hover {
 	opacity: .5;
